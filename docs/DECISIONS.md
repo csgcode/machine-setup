@@ -1,6 +1,8 @@
 # Decisions
 
 - Interface: interactive-first CLI with package/tag subcommands for automation.
+- Interactive UX: the default entrypoint uses a guided prompt flow backed by
+  the same package/tag command handlers as direct CLI invocations.
 - Data model: declarative YAML manifests for groups and packages.
 - Idempotency: every package has a `check` command before install.
 - Scope v1: `core` and `shell` groups only.

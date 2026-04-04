@@ -42,8 +42,8 @@ Use these task states when updating this document:
 Current progress:
 
 - completed: `P0.0` through `P0.4`
-- completed: `P1.1` through `P1.6`
-- pending: `P1.7` onward
+- completed: `P1.1` through `P1.7`
+- pending: `P2.1` onward
 
 ## Phase 0: Stabilize Current Repository
 

@@ -131,7 +131,9 @@ selection_resolve_packages() {
     selection_visit_package "$pkg" || return 1
   done
 
-  printf '%s\n' "${SELECTION_RESULT[@]}"
+  if [[ "${#SELECTION_RESULT[@]}" -gt 0 ]]; then
+    printf '%s\n' "${SELECTION_RESULT[@]}"
+  fi
 }
 
 selection_resolve_tags() {
@@ -153,7 +155,9 @@ selection_resolve_tags() {
     done < <(tag_packages "$tag")
   done
 
-  printf '%s\n' "${SELECTION_RESULT[@]}"
+  if [[ "${#SELECTION_RESULT[@]}" -gt 0 ]]; then
+    printf '%s\n' "${SELECTION_RESULT[@]}"
+  fi
 }
 
 selection_resolve_inputs() {
@@ -199,5 +203,7 @@ selection_resolve_inputs() {
     esac
   done
 
-  printf '%s\n' "${SELECTION_RESULT[@]}"
+  if [[ "${#SELECTION_RESULT[@]}" -gt 0 ]]; then
+    printf '%s\n' "${SELECTION_RESULT[@]}"
+  fi
 }

@@ -23,6 +23,7 @@ source "$ROOT_DIR/lib/core/selection.sh"
 source "$ROOT_DIR/lib/manifest.sh"
 source "$ROOT_DIR/lib/installers/brew.sh"
 source "$ROOT_DIR/lib/installers/shell.sh"
+source "$ROOT_DIR/lib/ui/interactive.sh"
 
 main() {
   export SETUP_DRY_RUN SETUP_YES SETUP_VERBOSE ROOT_DIR

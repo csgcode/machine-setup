@@ -6,6 +6,13 @@
 ./bin/setup
 ```
 
+The default flow is a guided prompt sequence:
+
+- choose `install`, `check`, or `apply-config`
+- choose packages or tags
+- review the resolved package set before execution
+- optionally save the selection into local machine state after install/config
+
 ## List known packages
 
 ```bash

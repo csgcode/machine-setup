@@ -3,7 +3,7 @@
 dispatch_cli() {
   case "$CLI_SUBCOMMAND" in
     menu)
-      compat_show_menu
+      cmd_interactive
       ;;
     list)
       cmd_list
