@@ -13,6 +13,12 @@ packages:
       package: alpha
     check:
       command: false
+    config:
+      target: alpha-config
+      strategy: chezmoi_tag
+      optional: true
+    manual_steps:
+      - Review alpha after install.
     depends_on:
       - beta
 
