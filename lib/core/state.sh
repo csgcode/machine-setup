@@ -99,7 +99,7 @@ state_append_unique() {
   shift
   local current=("$@")
 
-  if state_array_contains "$item" "${current[@]}"; then
+  if [[ "${#current[@]}" -gt 0 ]] && state_array_contains "$item" "${current[@]}"; then
     printf '%s\n' "${current[@]}"
     return 0
   fi
@@ -163,27 +163,61 @@ state_merge_package_selection() {
 
   while IFS= read -r item; do
     [[ -z "$item" ]] && continue
-    mapfile -t next < <(state_append_unique "$item" "${merged[@]}")
-    merged=("${next[@]}")
+    if [[ "${#merged[@]}" -gt 0 ]]; then
+      read_lines_into_array next state_append_unique "$item" "${merged[@]}"
+    else
+      read_lines_into_array next state_append_unique "$item"
+    fi
+    if [[ "${#next[@]}" -gt 0 ]]; then
+      merged=("${next[@]}")
+    else
+      merged=()
+    fi
   done < <(state_get_package_includes)
 
   while IFS= read -r item; do
     [[ -z "$item" ]] && continue
-    mapfile -t next < <(state_remove_item "$item" "${merged[@]}")
-    merged=("${next[@]}")
+    if [[ "${#merged[@]}" -gt 0 ]]; then
+      read_lines_into_array next state_remove_item "$item" "${merged[@]}"
+    else
+      read_lines_into_array next state_remove_item "$item"
+    fi
+    if [[ "${#next[@]}" -gt 0 ]]; then
+      merged=("${next[@]}")
+    else
+      merged=()
+    fi
   done < <(state_get_package_excludes)
 
   for item in "${cli_includes[@]}"; do
-    mapfile -t next < <(state_append_unique "$item" "${merged[@]}")
-    merged=("${next[@]}")
+    if [[ "${#merged[@]}" -gt 0 ]]; then
+      read_lines_into_array next state_append_unique "$item" "${merged[@]}"
+    else
+      read_lines_into_array next state_append_unique "$item"
+    fi
+    if [[ "${#next[@]}" -gt 0 ]]; then
+      merged=("${next[@]}")
+    else
+      merged=()
+    fi
   done
 
   for item in "${cli_excludes[@]}"; do
-    mapfile -t next < <(state_remove_item "$item" "${merged[@]}")
-    merged=("${next[@]}")
+    if [[ "${#merged[@]}" -gt 0 ]]; then
+      read_lines_into_array next state_remove_item "$item" "${merged[@]}"
+    else
+      read_lines_into_array next state_remove_item "$item"
+    fi
+    if [[ "${#next[@]}" -gt 0 ]]; then
+      merged=("${next[@]}")
+    else
+      merged=()
+    fi
   done
 
-  printf '%s\n' "${merged[@]}"
+  if [[ "${#merged[@]}" -gt 0 ]]; then
+    printf '%s\n' "${merged[@]}"
+  fi
 }
 
 state_ensure_parent_dir() {

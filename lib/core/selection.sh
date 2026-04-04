@@ -24,6 +24,32 @@ selection_array_contains() {
   return 1
 }
 
+selection_done_contains() {
+  local needle="$1"
+  local item
+
+  for item in "${SELECTION_DONE[@]+"${SELECTION_DONE[@]}"}"; do
+    if [[ "$item" == "$needle" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+selection_stack_contains() {
+  local needle="$1"
+  local item
+
+  for item in "${SELECTION_STACK[@]+"${SELECTION_STACK[@]}"}"; do
+    if [[ "$item" == "$needle" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 selection_push_stack() {
   local pkg="$1"
   SELECTION_STACK+=("$pkg")
@@ -65,11 +91,11 @@ selection_format_cycle() {
 selection_visit_package() {
   local pkg="$1"
 
-  if selection_array_contains "$pkg" "${SELECTION_DONE[@]}"; then
+  if selection_done_contains "$pkg"; then
     return 0
   fi
 
-  if selection_array_contains "$pkg" "${SELECTION_STACK[@]}"; then
+  if selection_stack_contains "$pkg"; then
     log_error "Circular dependency detected: $(selection_format_cycle "$pkg")"
     return 1
   fi

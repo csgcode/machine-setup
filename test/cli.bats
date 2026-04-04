@@ -24,8 +24,20 @@ setup() {
   [[ "$output" == *"Selectors are only supported with the install subcommand"* ]]
 }
 
-@test "conflicting install selectors are a usage error" {
+@test "install rejects mixing group and package selectors" {
   run "$REPO_ROOT/bin/setup" install --group core --package bash
   [ "$status" -eq 2 ]
-  [[ "$output" == *"Use either --group or --package, not both"* ]]
+  [[ "$output" == *"Use either --group or package/tag selectors, not both"* ]]
+}
+
+@test "missing tag value is a usage error" {
+  run "$REPO_ROOT/bin/setup" install --tag
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"Missing value for --tag"* ]]
+}
+
+@test "group selector is rejected for apply-config" {
+  run "$REPO_ROOT/bin/setup" apply-config --group shell
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"--group is only supported with install"* ]]
 }

@@ -12,6 +12,7 @@ setup() {
   run bash -lc '
     export HOME="'"$TEST_HOME"'"
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
     source "'"$REPO_ROOT"'/lib/core/state.sh"
     printf "%s\n%s\n" "$(state_config_path)" "$(state_state_path)"
   '
@@ -29,6 +30,7 @@ chezmoi:
   repo_url: https://file.example/repo.git
 EOF
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
     source "'"$REPO_ROOT"'/lib/core/state.sh"
     state_get_config_value chezmoi.repo_url
   '
@@ -41,6 +43,7 @@ EOF
     export HOME="'"$TEST_HOME"'"
     export MACHINE_SETUP_STATE_PATH="'"$BATS_TEST_TMPDIR"'/state.yaml"
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
     source "'"$REPO_ROOT"'/lib/core/state.sh"
     state_write_machine_state \
       --profile work-laptop \
@@ -64,6 +67,7 @@ EOF
     export HOME="'"$TEST_HOME"'"
     export MACHINE_SETUP_STATE_PATH="'"$BATS_TEST_TMPDIR"'/state.yaml"
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
     source "'"$REPO_ROOT"'/lib/core/state.sh"
     state_write_machine_state \
       --include-package gamma \

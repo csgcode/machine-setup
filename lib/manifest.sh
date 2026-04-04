@@ -2,9 +2,9 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PACKAGES_FILE="$ROOT_DIR/manifests/packages.yaml"
-GROUPS_FILE="$ROOT_DIR/manifests/groups.yaml"
-TAGS_FILE="$ROOT_DIR/manifests/tags.yaml"
+PACKAGES_FILE="${PACKAGES_FILE:-$ROOT_DIR/manifests/packages.yaml}"
+GROUPS_FILE="${GROUPS_FILE:-$ROOT_DIR/manifests/groups.yaml}"
+TAGS_FILE="${TAGS_FILE:-$ROOT_DIR/manifests/tags.yaml}"
 
 # Uses macOS system Ruby Psych parser for YAML so we don't depend on yq/jq.
 ruby_manifest() {
@@ -107,6 +107,10 @@ package_install_target() {
 
 package_check_command() {
   package_field "$1" "check.command"
+}
+
+package_config_optional() {
+  package_field "$1" "config.optional"
 }
 
 package_summary_table() {

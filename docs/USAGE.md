@@ -31,6 +31,28 @@ Legacy compatibility path during migration:
 
 ```bash
 ./bin/setup install --package oh-my-zsh
+./bin/setup install --package oh-my-zsh --package zsh-z
+```
+
+## Install by tag
+
+```bash
+./bin/setup install --tag shell
+./bin/setup install --package oh-my-zsh --tag shell
+```
+
+## Check selected packages
+
+```bash
+./bin/setup check --package oh-my-zsh
+./bin/setup check --tag shell
+```
+
+## Apply config for selected packages
+
+```bash
+./bin/setup apply-config --package oh-my-zsh
+./bin/setup apply-config --tag shell
 ```
 
 Shell configuration is no longer copied into `$HOME` by this repo. Dotfiles are
@@ -39,5 +61,7 @@ intended to be managed through `chezmoi`.
 ## Dry-run
 
 ```bash
+./bin/setup install --package oh-my-zsh --dry-run
+./bin/setup apply-config --tag shell --dry-run
 ./bin/setup install --group shell --dry-run --yes
 ```

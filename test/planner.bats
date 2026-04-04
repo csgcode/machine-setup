@@ -12,6 +12,7 @@ setup() {
 @test "planner builds package actions in resolved dependency order" {
   run bash -lc '
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
     source "'"$REPO_ROOT"'/lib/manifest.sh"
     source "'"$REPO_ROOT"'/lib/core/selection.sh"
     source "'"$REPO_ROOT"'/lib/core/planner.sh"
@@ -28,6 +29,7 @@ setup() {
 @test "planner emits config and manual actions when metadata exists" {
   run bash -lc '
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
     source "'"$REPO_ROOT"'/lib/manifest.sh"
     source "'"$REPO_ROOT"'/lib/core/selection.sh"
     source "'"$REPO_ROOT"'/lib/core/planner.sh"
@@ -37,13 +39,14 @@ setup() {
     planner_build_install_plan_from_packages alpha
   '
   [ "$status" -eq 0 ]
-  [[ "$output" == *$'config\talpha\tchezmoi_tag\talpha-config'* ]]
+  [[ "$output" == *$'config\talpha\tchezmoi_tag\talpha-config\ttrue'* ]]
   [[ "$output" == *$'manual_step\talpha\tReview alpha after install.'* ]]
 }
 
 @test "planner can build plans from mixed package and tag inputs" {
   run bash -lc '
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
     source "'"$REPO_ROOT"'/lib/manifest.sh"
     source "'"$REPO_ROOT"'/lib/core/selection.sh"
     source "'"$REPO_ROOT"'/lib/core/planner.sh"

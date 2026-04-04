@@ -19,7 +19,7 @@ chezmoi_append_unique() {
   shift
   local current=("$@")
 
-  if chezmoi_array_contains "$item" "${current[@]}"; then
+  if [[ "${#current[@]}" -gt 0 ]] && chezmoi_array_contains "$item" "${current[@]}"; then
     printf '%s\n' "${current[@]}"
     return 0
   fi
@@ -149,18 +149,36 @@ chezmoi_resolve_targets() {
   if [[ "$include_base" -eq 1 ]]; then
     base_target="$(state_get_config_value "chezmoi.base_target" | head -n1)"
     if [[ -n "$base_target" ]]; then
-      mapfile -t next < <(chezmoi_append_unique "$base_target" "${resolved[@]}")
-      resolved=("${next[@]}")
+      if [[ "${#resolved[@]}" -gt 0 ]]; then
+        read_lines_into_array next chezmoi_append_unique "$base_target" "${resolved[@]}"
+      else
+        read_lines_into_array next chezmoi_append_unique "$base_target"
+      fi
+      if [[ "${#next[@]}" -gt 0 ]]; then
+        resolved=("${next[@]}")
+      else
+        resolved=()
+      fi
     fi
   fi
 
   for target in "${targets[@]}"; do
     [[ -z "$target" ]] && continue
-    mapfile -t next < <(chezmoi_append_unique "$target" "${resolved[@]}")
-    resolved=("${next[@]}")
+    if [[ "${#resolved[@]}" -gt 0 ]]; then
+      read_lines_into_array next chezmoi_append_unique "$target" "${resolved[@]}"
+    else
+      read_lines_into_array next chezmoi_append_unique "$target"
+    fi
+    if [[ "${#next[@]}" -gt 0 ]]; then
+      resolved=("${next[@]}")
+    else
+      resolved=()
+    fi
   done
 
-  printf '%s\n' "${resolved[@]}"
+  if [[ "${#resolved[@]}" -gt 0 ]]; then
+    printf '%s\n' "${resolved[@]}"
+  fi
 }
 
 chezmoi_apply_targets() {
@@ -192,9 +210,9 @@ chezmoi_apply_targets() {
 
   targets=("$@")
   if [[ "$include_base" -eq 1 ]]; then
-    mapfile -t resolved < <(chezmoi_resolve_targets "${targets[@]}")
+    read_lines_into_array resolved chezmoi_resolve_targets "${targets[@]}"
   else
-    mapfile -t resolved < <(chezmoi_resolve_targets --no-base -- "${targets[@]}")
+    read_lines_into_array resolved chezmoi_resolve_targets --no-base -- "${targets[@]}"
   fi
 
   if [[ "${#resolved[@]}" -eq 0 ]]; then
@@ -246,9 +264,9 @@ chezmoi_diff_targets() {
 
   targets=("$@")
   if [[ "$include_base" -eq 1 ]]; then
-    mapfile -t resolved < <(chezmoi_resolve_targets "${targets[@]}")
+    read_lines_into_array resolved chezmoi_resolve_targets "${targets[@]}"
   else
-    mapfile -t resolved < <(chezmoi_resolve_targets --no-base -- "${targets[@]}")
+    read_lines_into_array resolved chezmoi_resolve_targets --no-base -- "${targets[@]}"
   fi
 
   if [[ "${#resolved[@]}" -eq 0 ]]; then

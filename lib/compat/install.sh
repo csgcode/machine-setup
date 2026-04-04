@@ -95,7 +95,10 @@ compat_install_package() {
 
   compat_push_stack "$pkg"
 
-  mapfile -t deps < <(package_dependencies "$pkg")
+  local deps=()
+  while IFS= read -r dep; do
+    deps+=("$dep")
+  done < <(package_dependencies "$pkg")
   for dep in "${deps[@]}"; do
     [[ -z "$dep" ]] && continue
     if ! compat_install_package "$dep"; then
@@ -122,27 +125,7 @@ compat_install_package() {
         brew_install_cask "$install_cmd"
         ;;
       shell_component)
-        case "$pkg" in
-          oh-my-zsh)
-            install_oh_my_zsh
-            ;;
-          zsh-syntax-highlighting)
-            install_zsh_plugin "https://github.com/zsh-users/zsh-syntax-highlighting.git" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-            ;;
-          zsh-autosuggestions-plugin)
-            install_zsh_plugin "https://github.com/zsh-users/zsh-autosuggestions" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-            ;;
-          zsh-z)
-            install_zsh_plugin "https://github.com/agkozak/zsh-z" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-z"
-            ;;
-          fzf-extra)
-            install_fzf_extras
-            ;;
-          *)
-            log_error "Unknown shell component handler for $pkg"
-            return 1
-            ;;
-        esac
+        shell_component_install "$install_cmd"
         ;;
       *)
         compat_pop_stack
@@ -163,7 +146,10 @@ compat_install_package() {
 
 compat_install_group() {
   local group="$1"
-  mapfile -t pkgs < <(GROUP="$group" list_group_packages "$group")
+  local pkgs=()
+  while IFS= read -r pkg; do
+    pkgs+=("$pkg")
+  done < <(GROUP="$group" list_group_packages "$group")
 
   if [[ "${#pkgs[@]}" -eq 0 ]]; then
     log_error "Unknown or empty group: $group"
@@ -184,8 +170,8 @@ compat_install_group() {
 }
 
 cmd_install_legacy() {
-  if [[ -n "$CLI_GROUP" && -n "$CLI_PACKAGE" ]]; then
-    log_error "Use either --group or --package, not both"
+  if [[ -n "$CLI_GROUP" ]] && [[ "${#CLI_PACKAGES[@]}" -gt 0 || "${#CLI_TAGS[@]}" -gt 0 ]]; then
+    log_error "Use either --group or package/tag selectors, not both"
     return 2
   fi
 
@@ -195,9 +181,9 @@ cmd_install_legacy() {
     return $?
   fi
 
-  if [[ -n "$CLI_PACKAGE" ]]; then
+  if [[ "${#CLI_PACKAGES[@]}" -gt 0 ]]; then
     compat_reset_install_state
-    compat_install_package "$CLI_PACKAGE"
+    compat_install_package "${CLI_PACKAGES[0]}"
     return $?
   fi
 

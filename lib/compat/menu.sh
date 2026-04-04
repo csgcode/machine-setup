@@ -35,7 +35,10 @@ compat_show_menu() {
 }
 
 compat_choose_group_and_install() {
-  mapfile -t groups < <(list_groups)
+  local groups=()
+  while IFS= read -r group; do
+    groups+=("$group")
+  done < <(list_groups)
   if [[ "${#groups[@]}" -eq 0 ]]; then
     log_warn "No groups found"
     return 0
@@ -56,7 +59,10 @@ compat_choose_group_and_install() {
 }
 
 compat_choose_package_and_install() {
-  mapfile -t pkgs < <(list_all_packages)
+  local pkgs=()
+  while IFS= read -r pkg; do
+    pkgs+=("$pkg")
+  done < <(list_all_packages)
   if [[ "${#pkgs[@]}" -eq 0 ]]; then
     log_warn "No packages found"
     return 0

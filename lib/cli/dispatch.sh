@@ -12,7 +12,13 @@ dispatch_cli() {
       cmd_doctor
       ;;
     install)
-      cmd_install_legacy
+      cmd_install
+      ;;
+    check)
+      cmd_check
+      ;;
+    apply-config)
+      cmd_apply_config
       ;;
     *)
       cli_usage_error "Unknown subcommand: $CLI_SUBCOMMAND"

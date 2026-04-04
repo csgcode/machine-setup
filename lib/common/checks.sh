@@ -20,3 +20,15 @@ run_eval() {
   fi
   eval "$cmd"
 }
+
+read_lines_into_array() {
+  local target_var="$1"
+  shift
+
+  local line=""
+  eval "$target_var=()"
+
+  while IFS= read -r line; do
+    eval "$target_var+=(\"\$line\")"
+  done < <("$@")
+}

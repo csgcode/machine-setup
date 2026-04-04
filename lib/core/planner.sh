@@ -12,16 +12,17 @@ planner_emit_package_action() {
 
 planner_emit_config_action() {
   local pkg="$1"
-  local strategy target
+  local strategy target optional
 
   strategy="$(package_field "$pkg" "config.strategy" | head -n1)"
   target="$(package_field "$pkg" "config.target" | head -n1)"
+  optional="$(package_config_optional "$pkg" | head -n1)"
 
   if [[ -z "$strategy" || -z "$target" ]]; then
     return 0
   fi
 
-  printf 'config\t%s\t%s\t%s\n' "$pkg" "$strategy" "$target"
+  printf 'config\t%s\t%s\t%s\t%s\n' "$pkg" "$strategy" "$target" "${optional:-false}"
 }
 
 planner_emit_manual_actions() {
@@ -51,18 +52,27 @@ planner_build_install_plan_from_resolved_packages() {
 
 planner_build_install_plan_from_packages() {
   local resolved=()
-  mapfile -t resolved < <(selection_resolve_packages "$@") || return 1
+  read_lines_into_array resolved selection_resolve_packages "$@" || return 1
+  if [[ "${#resolved[@]}" -eq 0 ]]; then
+    return 0
+  fi
   planner_build_install_plan_from_resolved_packages "${resolved[@]}"
 }
 
 planner_build_install_plan_from_tags() {
   local resolved=()
-  mapfile -t resolved < <(selection_resolve_tags "$@") || return 1
+  read_lines_into_array resolved selection_resolve_tags "$@" || return 1
+  if [[ "${#resolved[@]}" -eq 0 ]]; then
+    return 0
+  fi
   planner_build_install_plan_from_resolved_packages "${resolved[@]}"
 }
 
 planner_build_install_plan_from_inputs() {
   local resolved=()
-  mapfile -t resolved < <(selection_resolve_inputs "$@") || return 1
+  read_lines_into_array resolved selection_resolve_inputs "$@" || return 1
+  if [[ "${#resolved[@]}" -eq 0 ]]; then
+    return 0
+  fi
   planner_build_install_plan_from_resolved_packages "${resolved[@]}"
 }

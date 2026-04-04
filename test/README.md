@@ -22,3 +22,4 @@ Phase-1 coverage now also includes:
 - execution planning
 - desired-state config/state reads and writes
 - `chezmoi` bootstrap, init, apply, and diff behavior with stubbed commands
+- direct command workflows for `install`, `check`, and `apply-config`

@@ -2,7 +2,8 @@
 
 CLI_SUBCOMMAND="menu"
 CLI_GROUP=""
-CLI_PACKAGE=""
+CLI_PACKAGES=()
+CLI_TAGS=()
 CLI_SHOW_HELP=0
 
 CLI_EXIT_OK=0
@@ -15,14 +16,19 @@ Usage:
   setup [menu] [--dry-run] [--yes] [--verbose]
   setup list
   setup doctor
-  setup install --package <id>
+  setup install --package <id> [--package <id> ...] [--tag <tag> ...]
   setup install --group <name>    # legacy compatibility path
+  setup check --package <id> [--tag <tag> ...]
+  setup apply-config --package <id> [--tag <tag> ...]
 
 Examples:
   setup
   setup list
   setup doctor
   setup install --package oh-my-zsh
+  setup install --tag shell
+  setup check --package oh-my-zsh
+  setup apply-config --tag shell
   setup install --group shell --dry-run
 USAGE
 }
@@ -36,7 +42,8 @@ cli_usage_error() {
 parse_cli_args() {
   CLI_SUBCOMMAND="menu"
   CLI_GROUP=""
-  CLI_PACKAGE=""
+  CLI_PACKAGES=()
+  CLI_TAGS=()
   CLI_SHOW_HELP=0
 
   if [[ $# -gt 0 ]] && [[ "$1" != --* ]]; then
@@ -59,7 +66,15 @@ parse_cli_args() {
           cli_usage_error "Missing value for --package"
           return $?
         fi
-        CLI_PACKAGE="$2"
+        CLI_PACKAGES+=("$2")
+        shift 2
+        ;;
+      --tag)
+        if [[ $# -lt 2 || "$2" == --* ]]; then
+          cli_usage_error "Missing value for --tag"
+          return $?
+        fi
+        CLI_TAGS+=("$2")
         shift 2
         ;;
       --dry-run)
@@ -88,8 +103,14 @@ parse_cli_args() {
 
   case "$CLI_SUBCOMMAND" in
     menu|list|doctor)
-      if [[ -n "$CLI_GROUP" || -n "$CLI_PACKAGE" ]]; then
+      if [[ -n "$CLI_GROUP" || "${#CLI_PACKAGES[@]}" -gt 0 || "${#CLI_TAGS[@]}" -gt 0 ]]; then
         cli_usage_error "Selectors are only supported with the install subcommand"
+        return $?
+      fi
+      ;;
+    check|apply-config)
+      if [[ -n "$CLI_GROUP" ]]; then
+        cli_usage_error "--group is only supported with install"
         return $?
       fi
       ;;

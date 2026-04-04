@@ -38,3 +38,29 @@ install_fzf_extras() {
 
   run_eval "yes | '$fzf_install' --all"
 }
+
+shell_component_install() {
+  local component="$1"
+
+  case "$component" in
+    oh-my-zsh)
+      install_oh_my_zsh
+      ;;
+    zsh-syntax-highlighting)
+      install_zsh_plugin "https://github.com/zsh-users/zsh-syntax-highlighting.git" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+      ;;
+    zsh-autosuggestions-plugin)
+      install_zsh_plugin "https://github.com/zsh-users/zsh-autosuggestions" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+      ;;
+    zsh-z)
+      install_zsh_plugin "https://github.com/agkozak/zsh-z" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-z"
+      ;;
+    fzf-extra)
+      install_fzf_extras
+      ;;
+    *)
+      log_error "Unknown shell component handler for $component"
+      return 1
+      ;;
+  esac
+}
