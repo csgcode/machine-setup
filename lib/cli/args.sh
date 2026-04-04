@@ -35,10 +35,20 @@ parse_cli_args() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --group)
+        if [[ $# -lt 2 || "$2" == --* ]]; then
+          log_error "Missing value for --group"
+          cli_usage
+          return 2
+        fi
         CLI_GROUP="$2"
         shift 2
         ;;
       --package)
+        if [[ $# -lt 2 || "$2" == --* ]]; then
+          log_error "Missing value for --package"
+          cli_usage
+          return 2
+        fi
         CLI_PACKAGE="$2"
         shift 2
         ;;

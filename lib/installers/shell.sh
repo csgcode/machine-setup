@@ -20,35 +20,21 @@ install_zsh_plugin() {
 }
 
 install_fzf_extras() {
-  if [[ -f "/opt/homebrew/opt/fzf/install" ]]; then
-    run_eval "yes | /opt/homebrew/opt/fzf/install --all"
-  else
-    log_warn "fzf install helper not found at /opt/homebrew/opt/fzf/install"
-  fi
-}
+  local fzf_prefix=""
+  local fzf_install=""
 
-apply_dotfile_mapping() {
-  local mapping_file="$ROOT_DIR/dotfiles/mapping.yaml"
-  ruby -ryaml -e '
-    data=YAML.load_file(ARGV[0])
-    data["mappings"].each do |m|
-      src=File.expand_path(m["source"], ARGV[1])
-      dst=File.expand_path(m["target"])
-      puts [src,dst,m["mode"]].join("\t")
-    end
-  ' "$mapping_file" "$ROOT_DIR" | while IFS=$'\t' read -r src dst mode; do
-      if [[ ! -f "$src" ]]; then
-        log_warn "missing source dotfile: $src"
-        continue
-      fi
-      if [[ -e "$dst" && ! -e "$dst.setup.bak" ]]; then
-        run_eval "cp '$dst' '$dst.setup.bak'"
-      fi
-      if [[ "$mode" == "copy" ]]; then
-        run_eval "cp '$src' '$dst'"
-      else
-        run_eval "ln -sfn '$src' '$dst'"
-      fi
-      log_info "applied dotfile mapping: $dst"
-    done
+  if command_exists brew; then
+    fzf_prefix="$(brew --prefix fzf 2>/dev/null || true)"
+  fi
+
+  if [[ -n "$fzf_prefix" ]]; then
+    fzf_install="$fzf_prefix/install"
+  fi
+
+  if [[ -z "$fzf_install" || ! -f "$fzf_install" ]]; then
+    log_warn "fzf install helper not found via brew prefix"
+    return 0
+  fi
+
+  run_eval "yes | '$fzf_install' --all"
 }

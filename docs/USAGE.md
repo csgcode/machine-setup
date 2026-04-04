@@ -33,6 +33,9 @@ Legacy compatibility path during migration:
 ./bin/setup install --package oh-my-zsh
 ```
 
+Shell configuration is no longer copied into `$HOME` by this repo. Dotfiles are
+intended to be managed through `chezmoi`.
+
 ## Dry-run
 
 ```bash

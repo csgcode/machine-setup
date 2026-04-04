@@ -54,9 +54,6 @@ compat_install_package() {
           zsh-z)
             install_zsh_plugin "https://github.com/agkozak/zsh-z" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-z"
             ;;
-          zshrc-curated)
-            apply_dotfile_mapping
-            ;;
           fzf-extra)
             install_fzf_extras
             ;;

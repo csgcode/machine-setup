@@ -20,4 +20,3 @@ groups:
       - zsh-autosuggestions-plugin
       - zsh-z
       - fzf-extra
-      - zshrc-curated

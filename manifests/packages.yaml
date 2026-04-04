@@ -96,9 +96,3 @@ packages:
     install: fzf-extra
     depends_on:
       - fzf
-
-  - id: zshrc-curated
-    group: shell
-    manager: shell_component
-    check: rg -q "# machine-setup managed block" "$HOME/.zshrc" 2>/dev/null
-    install: zshrc-curated

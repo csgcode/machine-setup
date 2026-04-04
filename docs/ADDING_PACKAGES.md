@@ -10,7 +10,9 @@
 
 2. Add the package `id` to the relevant group in `manifests/groups.yaml`.
 
-3. For `shell_component`, add a case handler in `lib/cli.sh`.
+3. For `shell_component`, add a case handler in `lib/compat/install.sh`.
+   Do not add handlers that copy dotfiles into `$HOME`; config should be handled
+   through `chezmoi`.
 
 4. Validate with:
 
