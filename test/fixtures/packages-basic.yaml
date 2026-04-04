@@ -1,14 +1,31 @@
+schema_version: 1
+
 packages:
   - id: alpha
+    name: Alpha
     group: test
-    manager: brew_formula
-    check: false
-    install: alpha
+    platform:
+      - macos
+    tags:
+      - test
+    installer:
+      kind: brew_formula
+      package: alpha
+    check:
+      command: false
     depends_on:
       - beta
 
   - id: beta
+    name: Beta
     group: test
-    manager: brew_formula
-    check: false
-    install: beta
+    platform:
+      - macos
+    tags:
+      - test
+    installer:
+      kind: brew_formula
+      package: beta
+    check:
+      command: false
+    depends_on: []

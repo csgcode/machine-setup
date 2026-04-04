@@ -6,6 +6,7 @@ setup() {
   REPO_ROOT="$(repo_root)"
   FIXTURE_PACKAGES="$REPO_ROOT/test/fixtures/packages-basic.yaml"
   FIXTURE_GROUPS="$REPO_ROOT/test/fixtures/groups-basic.yaml"
+  FIXTURE_TAGS="$REPO_ROOT/manifests/tags.yaml"
 }
 
 @test "manifest helpers list fixture packages" {
@@ -27,4 +28,22 @@ setup() {
   '
   [ "$status" -eq 0 ]
   [ "$output" = 'beta' ]
+}
+
+@test "manifest helpers return package tags" {
+  run bash -lc '
+    source "'"$REPO_ROOT"'/lib/manifest.sh"
+    PACKAGES_FILE="'"$FIXTURE_PACKAGES"'"
+    package_tags alpha
+  '
+  [ "$status" -eq 0 ]
+  [ "$output" = 'test' ]
+}
+
+@test "manifest schema validation passes for repo manifests" {
+  run bash -lc '
+    source "'"$REPO_ROOT"'/lib/manifest.sh"
+    validate_manifest_schema
+  '
+  [ "$status" -eq 0 ]
 }

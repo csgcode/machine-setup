@@ -1,98 +1,239 @@
+schema_version: 1
+
 packages:
   - id: bash
+    name: Bash
     group: core
-    manager: brew_formula
-    check: command -v bash >/dev/null 2>&1
-    install: bash
+    platform:
+      - macos
+    tags:
+      - core
+      - shell
+      - cli
+    installer:
+      kind: brew_formula
+      package: bash
+    check:
+      command: command -v bash >/dev/null 2>&1
+    depends_on: []
 
   - id: bat
+    name: bat
     group: core
-    manager: brew_formula
-    check: command -v bat >/dev/null 2>&1
-    install: bat
+    platform:
+      - macos
+    tags:
+      - core
+      - cli
+    installer:
+      kind: brew_formula
+      package: bat
+    check:
+      command: command -v bat >/dev/null 2>&1
+    depends_on: []
 
   - id: gnu-sed
+    name: GNU sed
     group: core
-    manager: brew_formula
-    check: command -v gsed >/dev/null 2>&1
-    install: gnu-sed
+    platform:
+      - macos
+    tags:
+      - core
+      - cli
+    installer:
+      kind: brew_formula
+      package: gnu-sed
+    check:
+      command: command -v gsed >/dev/null 2>&1
+    depends_on: []
 
   - id: task
+    name: Task
     group: core
-    manager: brew_formula
-    check: command -v task >/dev/null 2>&1
-    install: task
+    platform:
+      - macos
+    tags:
+      - core
+      - cli
+    installer:
+      kind: brew_formula
+      package: task
+    check:
+      command: command -v task >/dev/null 2>&1
+    depends_on: []
 
   - id: yq
+    name: yq
     group: core
-    manager: brew_formula
-    check: command -v yq >/dev/null 2>&1
-    install: yq
+    platform:
+      - macos
+    tags:
+      - core
+      - cli
+    installer:
+      kind: brew_formula
+      package: yq
+    check:
+      command: command -v yq >/dev/null 2>&1
+    depends_on: []
 
   - id: pre-commit
+    name: pre-commit
     group: core
-    manager: brew_formula
-    check: command -v pre-commit >/dev/null 2>&1
-    install: pre-commit
+    platform:
+      - macos
+    tags:
+      - core
+      - cli
+      - git
+    installer:
+      kind: brew_formula
+      package: pre-commit
+    check:
+      command: command -v pre-commit >/dev/null 2>&1
+    depends_on: []
 
   - id: codex
+    name: Codex
     group: core
-    manager: brew_cask
-    check: brew list --cask codex >/dev/null 2>&1
-    install: codex
+    platform:
+      - macos
+    tags:
+      - core
+      - app
+    installer:
+      kind: brew_cask
+      package: codex
+    check:
+      command: brew list --cask codex >/dev/null 2>&1
+    depends_on: []
 
   - id: fzf
+    name: fzf
     group: shell
-    manager: brew_formula
-    check: command -v fzf >/dev/null 2>&1
-    install: fzf
+    platform:
+      - macos
+    tags:
+      - shell
+      - terminal
+      - cli
+    installer:
+      kind: brew_formula
+      package: fzf
+    check:
+      command: command -v fzf >/dev/null 2>&1
+    depends_on: []
 
   - id: nvm
+    name: Node Version Manager
     group: shell
-    manager: brew_formula
-    check: brew list --formula nvm >/dev/null 2>&1
-    install: nvm
+    platform:
+      - macos
+    tags:
+      - shell
+      - node
+      - cli
+    installer:
+      kind: brew_formula
+      package: nvm
+    check:
+      command: brew list --formula nvm >/dev/null 2>&1
+    depends_on: []
 
   - id: zsh-autosuggestions
+    name: zsh-autosuggestions
     group: shell
-    manager: brew_formula
-    check: brew list --formula zsh-autosuggestions >/dev/null 2>&1
-    install: zsh-autosuggestions
+    platform:
+      - macos
+    tags:
+      - shell
+      - zsh
+    installer:
+      kind: brew_formula
+      package: zsh-autosuggestions
+    check:
+      command: brew list --formula zsh-autosuggestions >/dev/null 2>&1
+    depends_on: []
 
   - id: oh-my-zsh
+    name: Oh My Zsh
     group: shell
-    manager: shell_component
-    check: test -d "$HOME/.oh-my-zsh"
-    install: oh-my-zsh
+    platform:
+      - macos
+    tags:
+      - shell
+      - zsh
+    installer:
+      kind: shell_component
+      package: oh-my-zsh
+    check:
+      command: test -d "$HOME/.oh-my-zsh"
+    depends_on: []
+    config:
+      target: shell-base
+      strategy: chezmoi_tag
+      optional: true
 
   - id: zsh-syntax-highlighting
+    name: zsh-syntax-highlighting
     group: shell
-    manager: shell_component
-    check: test -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-    install: zsh-syntax-highlighting
+    platform:
+      - macos
+    tags:
+      - shell
+      - zsh
+    installer:
+      kind: shell_component
+      package: zsh-syntax-highlighting
+    check:
+      command: test -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
     depends_on:
       - oh-my-zsh
 
   - id: zsh-autosuggestions-plugin
+    name: zsh-autosuggestions plugin
     group: shell
-    manager: shell_component
-    check: test -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-    install: zsh-autosuggestions-plugin
+    platform:
+      - macos
+    tags:
+      - shell
+      - zsh
+    installer:
+      kind: shell_component
+      package: zsh-autosuggestions-plugin
+    check:
+      command: test -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
     depends_on:
       - oh-my-zsh
 
   - id: zsh-z
+    name: zsh-z
     group: shell
-    manager: shell_component
-    check: test -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-z"
-    install: zsh-z
+    platform:
+      - macos
+    tags:
+      - shell
+      - zsh
+    installer:
+      kind: shell_component
+      package: zsh-z
+    check:
+      command: test -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-z"
     depends_on:
       - oh-my-zsh
 
   - id: fzf-extra
+    name: fzf extras
     group: shell
-    manager: shell_component
-    check: test -f "$HOME/.fzf.zsh"
-    install: fzf-extra
+    platform:
+      - macos
+    tags:
+      - shell
+      - terminal
+    installer:
+      kind: shell_component
+      package: fzf-extra
+    check:
+      command: test -f "$HOME/.fzf.zsh"
     depends_on:
       - fzf

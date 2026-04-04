@@ -105,9 +105,9 @@ compat_install_package() {
   done
 
   local manager check_cmd install_cmd service_name
-  manager="$(package_field "$pkg" manager | head -n1)"
-  check_cmd="$(package_field "$pkg" check | head -n1)"
-  install_cmd="$(package_field "$pkg" install | head -n1)"
+  manager="$(package_installer_kind "$pkg" | head -n1)"
+  check_cmd="$(package_check_command "$pkg" | head -n1)"
+  install_cmd="$(package_install_target "$pkg" | head -n1)"
   service_name="$(package_field "$pkg" service | head -n1)"
 
   if [[ -n "$check_cmd" ]] && eval "$check_cmd"; then

@@ -1,0 +1,26 @@
+schema_version: 1
+
+tags:
+  - id: app
+    description: GUI applications and casks.
+
+  - id: cli
+    description: Command-line tools.
+
+  - id: core
+    description: Core development bootstrap packages.
+
+  - id: git
+    description: Git and source-control related tooling.
+
+  - id: node
+    description: Node.js development tooling.
+
+  - id: shell
+    description: Shell and terminal packages.
+
+  - id: terminal
+    description: Terminal enhancement packages.
+
+  - id: zsh
+    description: Zsh-specific packages.

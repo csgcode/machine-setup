@@ -29,14 +29,10 @@ setup() {
         right) printf "%s\n" shared ;;
       esac
     }
-    package_field() {
-      case "$2" in
-        manager) printf "%s\n" brew_formula ;;
-        check) printf "%s\n" false ;;
-        install) printf "%s\n" "$1" ;;
-        service) printf "%s\n" ;;
-      esac
-    }
+    package_installer_kind() { printf "%s\n" brew_formula; }
+    package_check_command() { printf "%s\n" false; }
+    package_install_target() { printf "%s\n" "$1"; }
+    package_field() { printf "%s\n" ; }
     brew_install_formula() { :; }
     brew_install_cask() { :; }
     install_oh_my_zsh() { :; }
@@ -63,14 +59,10 @@ setup() {
         c) printf "%s\n" a ;;
       esac
     }
-    package_field() {
-      case "$2" in
-        manager) printf "%s\n" brew_formula ;;
-        check) printf "%s\n" false ;;
-        install) printf "%s\n" "$1" ;;
-        service) printf "%s\n" ;;
-      esac
-    }
+    package_installer_kind() { printf "%s\n" brew_formula; }
+    package_check_command() { printf "%s\n" false; }
+    package_install_target() { printf "%s\n" "$1"; }
+    package_field() { printf "%s\n" ; }
     brew_install_formula() { :; }
     brew_install_cask() { :; }
     install_oh_my_zsh() { :; }
