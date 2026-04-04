@@ -186,7 +186,7 @@ compat_install_group() {
 cmd_install_legacy() {
   if [[ -n "$CLI_GROUP" && -n "$CLI_PACKAGE" ]]; then
     log_error "Use either --group or --package, not both"
-    return 1
+    return 2
   fi
 
   if [[ -n "$CLI_GROUP" ]]; then
@@ -202,5 +202,5 @@ cmd_install_legacy() {
   fi
 
   log_error "install requires --group or --package"
-  return 1
+  return 2
 }

@@ -20,12 +20,9 @@ source "$ROOT_DIR/lib/installers/shell.sh"
 
 main() {
   export SETUP_DRY_RUN SETUP_YES SETUP_VERBOSE ROOT_DIR
-  parse_cli_args "$@" || {
-    local status=$?
-    if [[ "$status" -eq 1 ]]; then
-      return 0
-    fi
-    return "$status"
-  }
+  parse_cli_args "$@" || return $?
+  if [[ "$CLI_SHOW_HELP" -eq 1 ]]; then
+    return 0
+  fi
   dispatch_cli
 }

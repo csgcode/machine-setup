@@ -15,9 +15,8 @@ dispatch_cli() {
       cmd_install_legacy
       ;;
     *)
-      log_error "Unknown subcommand: $CLI_SUBCOMMAND"
-      cli_usage
-      return 1
+      cli_usage_error "Unknown subcommand: $CLI_SUBCOMMAND"
+      return $?
       ;;
   esac
 }
