@@ -38,7 +38,7 @@ list_all_tags() {
 
 package_exists() {
   local pkg="$1"
-  package_ruby_manifest 'data=YAML.load_file(ARGV[0]); ids=data.fetch("packages", []).map{|p| p["id"]}; exit(ids.include?(ENV["PKG"]) ? 0 : 1)'
+  PKG="$pkg" package_ruby_manifest 'data=YAML.load_file(ARGV[0]); ids=data.fetch("packages", []).map{|p| p["id"]}; exit(ids.include?(ENV["PKG"]) ? 0 : 1)'
 }
 
 tag_exists() {

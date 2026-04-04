@@ -1,0 +1,7 @@
+schema_version: 1
+
+tags:
+  - id: test
+    description: Test tag.
+  - id: group-a
+    description: Group A tag.
