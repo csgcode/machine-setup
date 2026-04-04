@@ -1,0 +1,104 @@
+packages:
+  - id: bash
+    group: core
+    manager: brew_formula
+    check: command -v bash >/dev/null 2>&1
+    install: bash
+
+  - id: bat
+    group: core
+    manager: brew_formula
+    check: command -v bat >/dev/null 2>&1
+    install: bat
+
+  - id: gnu-sed
+    group: core
+    manager: brew_formula
+    check: command -v gsed >/dev/null 2>&1
+    install: gnu-sed
+
+  - id: task
+    group: core
+    manager: brew_formula
+    check: command -v task >/dev/null 2>&1
+    install: task
+
+  - id: yq
+    group: core
+    manager: brew_formula
+    check: command -v yq >/dev/null 2>&1
+    install: yq
+
+  - id: pre-commit
+    group: core
+    manager: brew_formula
+    check: command -v pre-commit >/dev/null 2>&1
+    install: pre-commit
+
+  - id: codex
+    group: core
+    manager: brew_cask
+    check: brew list --cask codex >/dev/null 2>&1
+    install: codex
+
+  - id: fzf
+    group: shell
+    manager: brew_formula
+    check: command -v fzf >/dev/null 2>&1
+    install: fzf
+
+  - id: nvm
+    group: shell
+    manager: brew_formula
+    check: brew list --formula nvm >/dev/null 2>&1
+    install: nvm
+
+  - id: zsh-autosuggestions
+    group: shell
+    manager: brew_formula
+    check: brew list --formula zsh-autosuggestions >/dev/null 2>&1
+    install: zsh-autosuggestions
+
+  - id: oh-my-zsh
+    group: shell
+    manager: shell_component
+    check: test -d "$HOME/.oh-my-zsh"
+    install: oh-my-zsh
+
+  - id: zsh-syntax-highlighting
+    group: shell
+    manager: shell_component
+    check: test -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+    install: zsh-syntax-highlighting
+    depends_on:
+      - oh-my-zsh
+
+  - id: zsh-autosuggestions-plugin
+    group: shell
+    manager: shell_component
+    check: test -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+    install: zsh-autosuggestions-plugin
+    depends_on:
+      - oh-my-zsh
+
+  - id: zsh-z
+    group: shell
+    manager: shell_component
+    check: test -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-z"
+    install: zsh-z
+    depends_on:
+      - oh-my-zsh
+
+  - id: fzf-extra
+    group: shell
+    manager: shell_component
+    check: test -f "$HOME/.fzf.zsh"
+    install: fzf-extra
+    depends_on:
+      - fzf
+
+  - id: zshrc-curated
+    group: shell
+    manager: shell_component
+    check: rg -q "# machine-setup managed block" "$HOME/.zshrc" 2>/dev/null
+    install: zshrc-curated

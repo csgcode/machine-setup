@@ -1,0 +1,23 @@
+groups:
+  core:
+    description: Core CLI tools for daily development.
+    packages:
+      - bash
+      - bat
+      - gnu-sed
+      - task
+      - yq
+      - pre-commit
+      - codex
+  shell:
+    description: Zsh and terminal shell ergonomics.
+    packages:
+      - fzf
+      - nvm
+      - zsh-autosuggestions
+      - oh-my-zsh
+      - zsh-syntax-highlighting
+      - zsh-autosuggestions-plugin
+      - zsh-z
+      - fzf-extra
+      - zshrc-curated

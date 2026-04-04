@@ -1,0 +1,4 @@
+mappings:
+  - source: dotfiles/zshrc.base
+    target: ~/.zshrc
+    mode: copy

@@ -1,0 +1,9 @@
+.DS_Store
+**/.DS_Store
+
+# Generated local inventory reports
+reports/current-state-*.md
+
+# Common shell test artifacts
+tmp/
+coverage/
