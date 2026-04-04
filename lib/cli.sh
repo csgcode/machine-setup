@@ -10,6 +10,7 @@ SETUP_VERBOSE=0
 source "$ROOT_DIR/lib/common/log.sh"
 source "$ROOT_DIR/lib/common/checks.sh"
 source "$ROOT_DIR/lib/core/planner.sh"
+source "$ROOT_DIR/lib/core/state.sh"
 source "$ROOT_DIR/lib/cli/args.sh"
 source "$ROOT_DIR/lib/cli/dispatch.sh"
 source "$ROOT_DIR/lib/commands/system.sh"
