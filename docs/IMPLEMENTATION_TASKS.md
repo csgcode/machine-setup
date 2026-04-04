@@ -39,6 +39,12 @@ Use these task states when updating this document:
 - completed
 - blocked
 
+Current progress:
+
+- completed: `P0.0` through `P0.4`
+- completed: `P1.1` through `P1.5`
+- pending: `P1.6` onward
+
 ## Phase 0: Stabilize Current Repository
 
 ### P0.0 Create A Migration Shell Around The Current CLI

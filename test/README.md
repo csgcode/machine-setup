@@ -15,3 +15,10 @@ Current phase-0 coverage focuses on:
 - dry-run command behavior
 - duplicate dependency suppression
 - circular dependency detection
+
+Phase-1 coverage now also includes:
+
+- package/tag selection resolution
+- execution planning
+- desired-state config/state reads and writes
+- `chezmoi` bootstrap, init, apply, and diff behavior with stubbed commands
