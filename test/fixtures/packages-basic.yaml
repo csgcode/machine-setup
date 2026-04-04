@@ -1,0 +1,14 @@
+packages:
+  - id: alpha
+    group: test
+    manager: brew_formula
+    check: false
+    install: alpha
+    depends_on:
+      - beta
+
+  - id: beta
+    group: test
+    manager: brew_formula
+    check: false
+    install: beta

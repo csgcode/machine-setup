@@ -1,0 +1,6 @@
+groups:
+  test:
+    description: Test packages.
+    packages:
+      - alpha
+      - beta
