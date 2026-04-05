@@ -72,7 +72,7 @@ EOF
   run cat "$TEST_LOG"
   [[ "$output" == *"brew install beta"* ]]
   [[ "$output" == *"brew install alpha"* ]]
-  [[ "$output" == *"chezmoi apply --include=tags:shell-base --include=tags:alpha-config"* ]]
+  [[ "$output" == *"chezmoi apply shell-base alpha-config"* ]]
   run cat "$TEST_STATE"
   [[ "$output" == *"include:"* ]]
   [[ "$output" == *"- alpha"* ]]

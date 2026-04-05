@@ -24,11 +24,22 @@ run_eval() {
 read_lines_into_array() {
   local target_var="$1"
   shift
-
+  local output=""
+  local status=0
   local line=""
+
   eval "$target_var=()"
+
+  output="$("$@")"
+  status=$?
+
+  if [[ -z "$output" ]]; then
+    return "$status"
+  fi
 
   while IFS= read -r line; do
     eval "$target_var+=(\"\$line\")"
-  done < <("$@")
+  done <<< "$output"
+
+  return "$status"
 }

@@ -80,7 +80,7 @@ executor_execute_plan() {
         ;;
       config)
         case "$field3" in
-          chezmoi_tag)
+          chezmoi_target)
             if [[ "$field5" == "true" ]]; then
               chezmoi_apply_targets --optional "$field4" || return 1
             else

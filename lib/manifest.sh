@@ -150,7 +150,7 @@ validate_manifest_schema() {
 
       config=pkg["config"] || {}
       strategy=config["strategy"]
-      if !strategy.nil? && strategy != "chezmoi_tag"
+      if !strategy.nil? && strategy != "chezmoi_target"
         errors << "packages.yaml: #{id} has unsupported config strategy #{strategy}"
       end
     end

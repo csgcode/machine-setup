@@ -20,6 +20,7 @@ Usage:
   setup install --group <name>    # legacy compatibility path
   setup check --package <id> [--tag <tag> ...]
   setup apply-config --package <id> [--tag <tag> ...]
+  setup drift --package <id> [--tag <tag> ...]
 
 Examples:
   setup
@@ -29,6 +30,7 @@ Examples:
   setup install --tag shell
   setup check --package oh-my-zsh
   setup apply-config --tag shell
+  setup drift --tag shell
   setup install --group shell --dry-run
 USAGE
 }
@@ -108,7 +110,7 @@ parse_cli_args() {
         return $?
       fi
       ;;
-    check|apply-config)
+    check|apply-config|drift)
       if [[ -n "$CLI_GROUP" ]]; then
         cli_usage_error "--group is only supported with install"
         return $?

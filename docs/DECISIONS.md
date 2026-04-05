@@ -9,7 +9,8 @@
 - Migration: preserve `./bin/setup`, but treat group-based install flows as
   legacy compatibility behavior during the redesign.
 - Command model: `install`, `check`, and `apply-config` on package/tag
-  selections are the primary direct interface.
+  selections are the primary direct interface, with `drift` for non-destructive
+  config status reporting.
 - Dotfiles: this repo should not copy dotfiles into `$HOME`; configuration is
   moving to `chezmoi`.
 - Safety: supports `--dry-run`; install flows should avoid direct home-directory

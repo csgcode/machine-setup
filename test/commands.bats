@@ -68,7 +68,7 @@ EOF
   [[ "$output" == *"[manual] alpha: Review alpha after install."* ]]
   run cat "$TEST_LOG"
   [[ "$output" == *$'brew list --formula beta\nbrew install beta\nbrew list --formula alpha\nbrew install alpha'* ]]
-  [[ "$output" == *'chezmoi apply --include=tags:shell-base --include=tags:alpha-config'* ]]
+  [[ "$output" == *'chezmoi apply shell-base alpha-config'* ]]
 }
 
 @test "check --tag reports missing packages from resolved selections" {
@@ -103,5 +103,5 @@ EOF
   run cat "$TEST_LOG"
   [[ "$output" != *"brew install alpha"* ]]
   [[ "$output" != *"brew install beta"* ]]
-  [[ "$output" == *'chezmoi apply --include=tags:shell-base --include=tags:alpha-config'* ]]
+  [[ "$output" == *'chezmoi apply shell-base alpha-config'* ]]
 }

@@ -27,8 +27,8 @@ These decisions are now considered settled for planning purposes.
 - Selection model for phase 1: individual packages and tags.
 - Desired-state persistence: hybrid model using repo-defined profiles/catalog
   plus machine-local overrides.
-- Config application model: package-linked `chezmoi` targets, with `chezmoi`
-  tags as the preferred phase 1 mechanism.
+- Config application model: package-linked `chezmoi` targets, with explicit
+  `chezmoi` target paths as the phase 1 mechanism.
 - Default command behavior: `install` should install software and apply linked
   config by default.
 - Shared config policy: handle shared/global config through a small explicit
@@ -68,7 +68,8 @@ These decisions are now considered settled for planning purposes.
   - apply config for one package
 - Treat config as `chezmoi`-managed only. This repository should stop copying
   dotfiles directly.
-- Use package-linked `chezmoi` tags for package-specific config targeting.
+- Use package-linked `chezmoi` target paths for package-specific config
+  targeting.
 - Support a hybrid desired-state model:
   - repo-defined catalog and future profiles
   - machine-local overrides for per-machine customization
@@ -127,7 +128,8 @@ Why:
 Use explicit package-to-config mapping.
 
 Each package may declare an optional config target. The config target should map
-to `chezmoi` behavior, with `chezmoi` tags as the preferred phase 1 mechanism.
+to `chezmoi` behavior, with explicit target paths as the preferred phase 1
+mechanism.
 
 Recommended phase 1 contract:
 
@@ -327,7 +329,7 @@ packages:
     depends_on: []
     config:
       target: wezterm
-      strategy: chezmoi_tag
+      strategy: chezmoi_target
       optional: true
     notes:
       - "May require default terminal preference changes."
@@ -505,7 +507,7 @@ Until overridden, use these defaults:
 
 - keep bootstrap repo and `chezmoi` repo separate
 - keep package metadata declarative
-- use package-linked `chezmoi` tag targets
+- use package-linked `chezmoi` target paths
 - preserve the entrypoint, not the legacy CLI semantics
 - route both direct CLI and interactive flows through the same backend
 - prefer warnings over hard failure when config target is missing

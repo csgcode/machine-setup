@@ -144,7 +144,7 @@ EOF
     tail -n 1 "'"$CHEZMOI_LOG"'"
   '
   [ "$status" -eq 0 ]
-  [[ "$output" == *$'---\nchezmoi apply --include=tags:shell-base --include=tags:alpha'* ]]
+  [[ "$output" == *$'---\nchezmoi apply shell-base alpha'* ]]
 }
 
 @test "chezmoi optional apply warns and succeeds when target apply fails" {
@@ -192,7 +192,7 @@ EOF
     chezmoi_diff_targets alpha
   '
   [ "$status" -eq 0 ]
-  [[ "$output" == *"diff diff --include=tags:shell-base --include=tags:alpha"* ]]
+  [[ "$output" == *"diff diff shell-base alpha"* ]]
 }
 
 @test "chezmoi dry-run shows bootstrap init and apply commands without mutation" {
@@ -223,5 +223,5 @@ EOF
   [ "$status" -eq 0 ]
   [[ "$output" == *"[DRY-RUN] brew list --formula 'chezmoi' >/dev/null 2>&1 || brew install 'chezmoi'"* ]]
   [[ "$output" == *"[DRY-RUN] chezmoi init --apply=false https://example.com/dotfiles.git"* ]]
-  [[ "$output" == *"[DRY-RUN] chezmoi apply --include=tags:shell-base --include=tags:alpha"* ]]
+  [[ "$output" == *"[DRY-RUN] chezmoi apply shell-base alpha"* ]]
 }

@@ -43,7 +43,8 @@ Current progress:
 
 - completed: `P0.0` through `P0.4`
 - completed: `P1.1` through `P1.7`
-- pending: `P2.1` onward
+- completed: `P2.1`
+- pending: `P2.2` onward
 
 ## Phase 0: Stabilize Current Repository
 
@@ -204,7 +205,7 @@ Definition of done:
 - detect whether `chezmoi` is installed
 - bootstrap `chezmoi` if missing
 - support private HTTPS init using `CHEZMOI_REPO_URL`
-- support package-linked config application through `chezmoi` tags
+- support package-linked config application through `chezmoi` target paths
 - support a small explicit base/shared config target
 - define behavior when `chezmoi` is installed but not initialized
 - define behavior when `CHEZMOI_REPO_URL` is missing in non-interactive mode
@@ -342,7 +343,7 @@ coverage:
 
 - bootstrap when missing
 - init from configured `CHEZMOI_REPO_URL`
-- apply package-linked tags
+- apply package-linked config targets
 - missing target warnings
 - drift reporting via stubbed `chezmoi diff`
 

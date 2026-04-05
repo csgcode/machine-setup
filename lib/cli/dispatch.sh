@@ -20,6 +20,9 @@ dispatch_cli() {
     apply-config)
       cmd_apply_config
       ;;
+    drift)
+      cmd_drift
+      ;;
     *)
       cli_usage_error "Unknown subcommand: $CLI_SUBCOMMAND"
       return $?

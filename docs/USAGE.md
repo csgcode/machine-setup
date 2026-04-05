@@ -62,6 +62,13 @@ Legacy compatibility path during migration:
 ./bin/setup apply-config --tag shell
 ```
 
+## Report config drift for selected packages
+
+```bash
+./bin/setup drift --package oh-my-zsh
+./bin/setup drift --tag shell
+```
+
 Shell configuration is no longer copied into `$HOME` by this repo. Dotfiles are
 intended to be managed through `chezmoi`.
 

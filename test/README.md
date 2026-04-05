@@ -23,4 +23,6 @@ Phase-1 coverage now also includes:
 - desired-state config/state reads and writes
 - `chezmoi` bootstrap, init, apply, and diff behavior with stubbed commands
 - direct command workflows for `install`, `check`, and `apply-config`
+- config drift reporting across clean, drifted, unavailable, and
+  not-applicable states
 - guided interactive workflows, including success and abort paths

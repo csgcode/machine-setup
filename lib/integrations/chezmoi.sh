@@ -224,7 +224,7 @@ chezmoi_apply_targets() {
 
   local target
   for target in "${resolved[@]}"; do
-    cmd+=("--include=tags:$target")
+    cmd+=("$target")
   done
 
   if chezmoi_run_command "${cmd[@]}"; then
@@ -238,6 +238,62 @@ chezmoi_apply_targets() {
 
   log_error "Chezmoi apply failed for targets: ${resolved[*]}"
   return 1
+}
+
+chezmoi_target_exists() {
+  local target="$1"
+  local output=""
+  local status=0
+
+  chezmoi_ensure_ready >&2 || return 1
+
+  output="$(chezmoi managed "$target" 2>/dev/null)" || status=$?
+  if [[ "$status" -eq 0 ]]; then
+    if [[ -n "$output" ]]; then
+      return 0
+    fi
+
+    return 1
+  fi
+
+  if [[ "$status" -eq 1 ]]; then
+    return 1
+  fi
+
+  return "$status"
+}
+
+chezmoi_target_status() {
+  local target="$1"
+  local output=""
+  local status=0
+
+  chezmoi_target_exists "$target"
+  status=$?
+  if [[ "$status" -ne 0 ]]; then
+    if [[ "$status" -eq 1 ]]; then
+      printf 'unavailable\nNo managed chezmoi entries for target %s\n' "$target"
+      return 0
+    fi
+
+    printf 'unavailable\nFailed to inspect chezmoi target %s\n' "$target"
+    return 0
+  fi
+
+  status=0
+  output="$(chezmoi diff "$target" 2>&1)" || status=$?
+  if [[ "$status" -eq 0 ]]; then
+    printf 'clean\n'
+    return 0
+  fi
+
+  if [[ "$status" -eq 1 ]]; then
+    printf 'drifted\n%s\n' "$output"
+    return 0
+  fi
+
+  printf 'unavailable\n%s\n' "${output:-Chezmoi diff failed for target $target}"
+  return 0
 }
 
 chezmoi_diff_targets() {
@@ -278,7 +334,7 @@ chezmoi_diff_targets() {
 
   local target
   for target in "${resolved[@]}"; do
-    cmd+=("--include=tags:$target")
+    cmd+=("$target")
   done
 
   if [[ "${SETUP_DRY_RUN:-0}" -eq 1 ]]; then

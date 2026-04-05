@@ -39,7 +39,7 @@ setup() {
     planner_build_install_plan_from_packages alpha
   '
   [ "$status" -eq 0 ]
-  [[ "$output" == *$'config\talpha\tchezmoi_tag\talpha-config\ttrue'* ]]
+  [[ "$output" == *$'config\talpha\tchezmoi_target\talpha-config\ttrue'* ]]
   [[ "$output" == *$'manual_step\talpha\tReview alpha after install.'* ]]
 }
 

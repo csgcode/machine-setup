@@ -15,7 +15,7 @@ packages:
       command: false
     config:
       target: alpha-config
-      strategy: chezmoi_tag
+      strategy: chezmoi_target
       optional: true
     manual_steps:
       - Review alpha after install.

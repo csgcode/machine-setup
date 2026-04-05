@@ -41,3 +41,15 @@ setup() {
   [ "$status" -eq 2 ]
   [[ "$output" == *"--group is only supported with install"* ]]
 }
+
+@test "drift is included in help output" {
+  run "$REPO_ROOT/bin/setup" --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"setup drift --package <id> [--tag <tag> ...]"* ]]
+}
+
+@test "drift requires a selector" {
+  run "$REPO_ROOT/bin/setup" drift
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"drift requires --package or --tag"* ]]
+}
