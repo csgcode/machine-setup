@@ -14,33 +14,59 @@ CLI_EXIT_USAGE_ERROR=2
 
 cli_usage() {
   cat <<USAGE
-Usage:
+machine-setup: declarative macOS bootstrap for packages and chezmoi-managed config
+
+Use:
+  setup                         Guided interactive flow for human-driven setup
+  setup list                    Show packages known to this repo
+  setup doctor                  Check local prerequisites before bootstrap/install
+  setup bootstrap               Install and initialize chezmoi if needed
+  setup status                  Compare saved desired state with installed software
+  setup install ...             Install selected software and apply linked config
+  setup check ...               Check whether selected software is installed
+  setup apply-config ...        Re-apply config only for selected software
+  setup drift ...               Report chezmoi config drift for selected software
+
+Selectors:
+  --package <id>                Select one package, repeatable
+  --tag <tag>                   Select a logical package group, repeatable
+  --profile <id>                Select a repo-defined profile, repeatable
+  --group <name>                Legacy compatibility path for install only
+
+Formats:
+  --format text|json            Supported by list, doctor, status, drift, bootstrap
+
+Flags:
+  --dry-run                     Preview mutating operations without changing the machine
+  --yes                         Non-interactive mode where prompts would normally appear
+  --verbose                     More detailed logging
+  -h, --help                    Show this help
+
+Command Syntax:
   setup [menu] [--dry-run] [--yes] [--verbose]
   setup [subcommand] [--format <text|json>]
-  setup list
-  setup doctor
-  setup status
-  setup bootstrap
   setup install --package <id> [--package <id> ...] [--tag <tag> ...] [--profile <id> ...]
-  setup install --group <name>    # legacy compatibility path
+  setup install --group <name>
   setup check --package <id> [--tag <tag> ...] [--profile <id> ...]
   setup apply-config --package <id> [--tag <tag> ...] [--profile <id> ...]
   setup drift --package <id> [--tag <tag> ...] [--profile <id> ...]
 
-Examples:
-  setup
-  setup list
+Common Workflows:
   setup doctor
-  setup status
   setup bootstrap
-  setup install --package oh-my-zsh
+  setup
   setup install --tag shell
-  setup install --profile work-laptop
-  setup check --package oh-my-zsh
-  setup apply-config --tag shell
+  setup check --profile work-laptop
+  setup status
   setup drift --tag shell
   setup status --format json
-  setup install --group shell --dry-run
+
+Notes:
+  install applies linked config by default
+  status shows what is missing from saved desired state on this machine
+  list shows what this repo can manage
+  drift checks config state through chezmoi
+  prefer package/tag/profile selectors for new usage
 USAGE
 }
 

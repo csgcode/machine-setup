@@ -9,7 +9,8 @@ setup() {
 @test "help exits successfully" {
   run "$REPO_ROOT/bin/setup" --help
   [ "$status" -eq 0 ]
-  [[ "$output" == *"Usage:"* ]]
+  [[ "$output" == *"machine-setup: declarative macOS bootstrap"* ]]
+  [[ "$output" == *"Common Workflows:"* ]]
 }
 
 @test "missing group value is a usage error" {
