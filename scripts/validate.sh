@@ -45,6 +45,30 @@ validate_manifests() {
   )
 }
 
+validate_collect_ignore_manifest() {
+  IGNORE_FILE_PATH="$ROOT_DIR/manifests/collect-ignore.yaml" ruby -ryaml -e '
+    path=ENV["IGNORE_FILE_PATH"]
+    exit 0 unless File.exist?(path)
+
+    data=YAML.load_file(path) || {}
+    errors=[]
+    errors << "collect-ignore.yaml: schema_version must be 1" unless data["schema_version"] == 1
+
+    ignore=data["ignore"] || {}
+    %w[package_ids brew_formula brew_cask npm_global].each do |key|
+      value=ignore[key]
+      next if value.nil? || value.is_a?(Array)
+
+      errors << "collect-ignore.yaml: ignore.#{key} must be an array"
+    end
+
+    unless errors.empty?
+      warn errors.join("\n")
+      exit 1
+    end
+  '
+}
+
 lint_shell() {
   local files=()
 
@@ -69,6 +93,7 @@ lint_shell() {
 
 run_step "Checking patch cleanliness" git -C "$ROOT_DIR" diff --check
 run_step "Validating manifests" validate_manifests
+run_step "Validating collect ignore manifest" validate_collect_ignore_manifest
 
 if [[ "$SKIP_SHELLCHECK" -eq 0 ]]; then
   if ! command -v shellcheck >/dev/null 2>&1; then

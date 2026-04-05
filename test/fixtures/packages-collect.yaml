@@ -1,0 +1,44 @@
+schema_version: 1
+
+packages:
+  - id: alpha
+    name: Alpha
+    group: test
+    platform:
+      - macos
+    tags:
+      - collect
+    installer:
+      kind: brew_formula
+      package: alpha-formula
+    check:
+      command: command -v alpha >/dev/null 2>&1
+    depends_on: []
+
+  - id: bravo
+    name: Bravo
+    group: test
+    platform:
+      - macos
+    tags:
+      - collect
+    installer:
+      kind: brew_cask
+      package: alpha-app
+    check:
+      command: brew list --cask alpha-app >/dev/null 2>&1
+    depends_on: []
+
+  - id: shellpkg
+    name: Shell Package
+    group: test
+    platform:
+      - macos
+    tags:
+      - collect
+    installer:
+      kind: shell_component
+      package: shellpkg
+    check:
+      command: test -f "$HOME/.shellpkg"
+    depends_on: []

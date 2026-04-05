@@ -113,3 +113,13 @@ intended to be managed through `chezmoi`.
 ./scripts/validate.sh
 ./scripts/validate.sh --skip-shellcheck
 ```
+
+## Collect current state
+
+```bash
+./scripts/collect_current_state.sh
+```
+
+The collector writes a markdown report into `reports/` and uses
+`manifests/collect-ignore.yaml` to suppress known package names from the
+manifest-aware installed/missing sections.

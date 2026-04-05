@@ -1,0 +1,11 @@
+schema_version: 1
+
+ignore:
+  package_ids:
+    - shellpkg
+  brew_formula:
+    - ignored-formula
+  brew_cask:
+    - ignored-cask
+  npm_global:
+    - ignored-tool

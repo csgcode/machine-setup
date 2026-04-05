@@ -1,0 +1,7 @@
+schema_version: 1
+
+ignore:
+  package_ids: []
+  brew_formula: []
+  brew_cask: []
+  npm_global: []
