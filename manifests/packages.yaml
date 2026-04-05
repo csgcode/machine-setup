@@ -51,6 +51,37 @@ packages:
       command: command -v bat >/dev/null 2>&1
     depends_on: []
 
+  - id: awscli
+    name: AWS CLI
+    group: core
+    platform:
+      - macos
+    tags:
+      - core
+      - cli
+    installer:
+      kind: brew_formula
+      package: awscli
+    check:
+      command: command -v aws >/dev/null 2>&1
+    depends_on: []
+
+  - id: glab
+    name: GitLab CLI
+    group: core
+    platform:
+      - macos
+    tags:
+      - core
+      - cli
+      - git
+    installer:
+      kind: brew_formula
+      package: glab
+    check:
+      command: command -v glab >/dev/null 2>&1
+    depends_on: []
+
   - id: gnu-sed
     name: GNU sed
     group: core
@@ -112,6 +143,37 @@ packages:
       command: command -v pre-commit >/dev/null 2>&1
     depends_on: []
 
+  - id: pipx
+    name: pipx
+    group: core
+    platform:
+      - macos
+    tags:
+      - core
+      - cli
+    installer:
+      kind: brew_formula
+      package: pipx
+    check:
+      command: command -v pipx >/dev/null 2>&1
+    depends_on: []
+
+  - id: tmux
+    name: tmux
+    group: core
+    platform:
+      - macos
+    tags:
+      - core
+      - cli
+      - terminal
+    installer:
+      kind: brew_formula
+      package: tmux
+    check:
+      command: command -v tmux >/dev/null 2>&1
+    depends_on: []
+
   - id: codex
     name: Codex
     group: core
@@ -125,6 +187,51 @@ packages:
       package: codex
     check:
       command: brew list --cask codex >/dev/null 2>&1
+    depends_on: []
+
+  - id: maccy
+    name: Maccy
+    group: core
+    platform:
+      - macos
+    tags:
+      - core
+      - app
+    installer:
+      kind: brew_cask
+      package: maccy
+    check:
+      command: brew list --cask maccy >/dev/null 2>&1
+    depends_on: []
+
+  - id: meetingbar
+    name: MeetingBar
+    group: core
+    platform:
+      - macos
+    tags:
+      - core
+      - app
+    installer:
+      kind: brew_cask
+      package: meetingbar
+    check:
+      command: brew list --cask meetingbar >/dev/null 2>&1
+    depends_on: []
+
+  - id: session-manager-plugin
+    name: Session Manager Plugin
+    group: core
+    platform:
+      - macos
+    tags:
+      - core
+      - app
+    installer:
+      kind: brew_cask
+      package: session-manager-plugin
+    check:
+      command: brew list --cask session-manager-plugin >/dev/null 2>&1
     depends_on: []
 
   - id: fzf

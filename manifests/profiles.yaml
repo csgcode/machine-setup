@@ -1,3 +1,13 @@
 schema_version: 1
 
-profiles: []
+profiles:
+  - id: personal
+    packages:
+      - aerospace
+      - bat
+      - codex
+      - maccy
+      - task
+      - tmux
+    tags:
+      - shell

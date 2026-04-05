@@ -5,11 +5,18 @@ groups:
       - aerospace
       - bash
       - bat
+      - awscli
+      - glab
       - gnu-sed
+      - pipx
       - task
+      - tmux
       - yq
       - pre-commit
       - codex
+      - maccy
+      - meetingbar
+      - session-manager-plugin
   shell:
     description: Zsh and terminal shell ergonomics.
     packages:
