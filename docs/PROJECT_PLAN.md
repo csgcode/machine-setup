@@ -85,6 +85,8 @@ These decisions are now considered settled for planning purposes.
 - Ubuntu support
 - desired-state reconciliation reports across packages and config
 - optional strict mode and policy controls
+- machine-readable command output for reporting workflows
+- CI-backed validation and catalog hygiene automation
 
 ## Repository Boundaries
 

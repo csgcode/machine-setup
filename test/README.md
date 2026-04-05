@@ -27,4 +27,5 @@ Phase-1 coverage now also includes:
 - config drift reporting across clean, drifted, unavailable, and
   not-applicable states
 - desired-state reporting from merged profile and local overrides
+- JSON output coverage for `list`, `doctor`, `status`, and `drift`
 - guided interactive workflows, including success and abort paths

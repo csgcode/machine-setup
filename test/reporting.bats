@@ -97,3 +97,19 @@ EOF
   [[ "$output" == *"[unavailable] alpha (alpha-config): No managed chezmoi entries for target alpha-config"* ]]
   [[ "$output" == *"Summary: clean=0 drifted=0 unavailable=1 not-applicable=0"* ]]
 }
+
+@test "drift --format json emits structured results" {
+  run env \
+    HOME="$TEST_HOME" \
+    PATH="$TEST_BIN:/usr/bin:/bin" \
+    TEST_LOG="$TEST_LOG" \
+    PACKAGES_FILE="$FIXTURE_PACKAGES" \
+    TAGS_FILE="$FIXTURE_TAGS" \
+    GROUPS_FILE="$FIXTURE_GROUPS" \
+    CHEZMOI_DIFF_ALPHA_DRIFT=1 \
+    "$REPO_ROOT/bin/setup" drift --package alpha --format json
+
+  [ "$status" -eq 1 ]
+  run ruby -rjson -e 'data=JSON.parse(ARGF.read); abort unless data["summary"]["drifted"] == 1; abort unless data["packages"].any?{|pkg| pkg["package"]=="alpha" && pkg["status"]=="drifted"}' <<<"$output"
+  [ "$status" -eq 0 ]
+}

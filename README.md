@@ -17,6 +17,7 @@ Idempotent macOS machine bootstrap for development tools.
 - Group and single-package installs
 - Declarative package/group manifests (YAML)
 - Dry-run mode
+- JSON output for reporting commands
 - Configuration is being migrated to `chezmoi`
 
 See `docs/USAGE.md` for full command examples.

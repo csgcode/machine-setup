@@ -46,6 +46,62 @@ Current progress:
 - completed: `P2.1`
 - completed: `P2.2`
 - completed: `P3.1`
+- completed: `P4.1`
+- in_progress: `P4.2`
+
+## Phase 4: Operational Polish
+
+### P4.1 Add Structured Output
+
+- add `--format text|json` for non-mutating reporting/system commands
+- support JSON output for `list`, `doctor`, `status`, and `drift`
+- keep text output stable as the default human-oriented format
+- avoid mixing log noise into JSON output
+- add tests for parseable JSON payloads and error handling
+
+Definition of done:
+
+- supported reporting/system commands can emit valid JSON
+- JSON output preserves command exit-status behavior
+- text output remains the default interface
+
+### P4.2 Add Explicit Bootstrap Workflow
+
+- add a first-class `bootstrap` command for `chezmoi` readiness
+- validate `CHEZMOI_REPO_URL` configuration before init
+- make bootstrap dry-run behavior explicit and predictable
+- add tests for installed, missing, initialized, and missing-config cases
+
+Definition of done:
+
+- users can prepare `chezmoi` without running a package install
+- bootstrap behavior is consistent across interactive and non-interactive use
+- failures explain missing prerequisites clearly
+
+### P4.3 Add CI Validation Workflow
+
+- add GitHub Actions coverage for shell tests and manifest validation
+- add shell linting with `shellcheck`
+- ensure the workflow is deterministic and does not require local secrets
+- document the local equivalent validation commands
+
+Definition of done:
+
+- pull requests can run the core validation suite automatically
+- CI covers tests, shell lint, and manifest validation
+
+### P4.4 Modernize Current-State Collection
+
+- enhance `scripts/collect_current_state.sh` with manifest-aware missing detection
+- add `manifests/collect-ignore.yaml` for persistent exclusions
+- ensure ignored packages never appear in installed or missing sections
+- add tests or script-level validation coverage for the collector
+
+Definition of done:
+
+- collection output distinguishes installed catalog packages from manifest-missing
+- ignore rules are declarative and persistent
+- reports are useful for catalog review without noisy false positives
 
 ## Phase 0: Stabilize Current Repository
 

@@ -78,6 +78,58 @@ reporting_print_status_summary() {
     "$installed_unselected_count"
 }
 
+reporting_json_print_drift() {
+  local packages_json="$1"
+  local clean_count="$2"
+  local drifted_count="$3"
+  local unavailable_count="$4"
+  local not_applicable_count="$5"
+  local exit_status="$6"
+  local warning="${7:-}"
+
+  printf '{\n'
+  printf '  "packages": %s,\n' "$packages_json"
+  printf '  "summary": {"clean": %s, "drifted": %s, "unavailable": %s, "not_applicable": %s},\n' \
+    "$clean_count" \
+    "$drifted_count" \
+    "$unavailable_count" \
+    "$not_applicable_count"
+  printf '  "exit_status": %s' "$exit_status"
+  if [[ -n "$warning" ]]; then
+    printf ',\n  "warning": %s\n' "$(output_json_string "$warning")"
+  else
+    printf '\n'
+  fi
+  printf '}\n'
+}
+
+reporting_json_print_status() {
+  local desired_json="$1"
+  local installed_unselected_json="$2"
+  local desired_count="$3"
+  local installed_desired_count="$4"
+  local missing_desired_count="$5"
+  local installed_unselected_count="$6"
+  local exit_status="$7"
+  local warning="${8:-}"
+
+  printf '{\n'
+  printf '  "desired_packages": %s,\n' "$desired_json"
+  printf '  "installed_unselected": %s,\n' "$installed_unselected_json"
+  printf '  "summary": {"desired": %s, "installed": %s, "missing": %s, "installed_unselected": %s},\n' \
+    "$desired_count" \
+    "$installed_desired_count" \
+    "$missing_desired_count" \
+    "$installed_unselected_count"
+  printf '  "exit_status": %s' "$exit_status"
+  if [[ -n "$warning" ]]; then
+    printf ',\n  "warning": %s\n' "$(output_json_string "$warning")"
+  else
+    printf '\n'
+  fi
+  printf '}\n'
+}
+
 cmd_drift() {
   local selection_args=()
   local resolved=()
@@ -92,11 +144,17 @@ cmd_drift() {
   local unavailable_count=0
   local not_applicable_count=0
   local exit_status=0
+  local package_results=()
+  local detail_json=""
 
   read_lines_into_array selection_args reporting_selection_args_or_error || return $?
   read_lines_into_array resolved selection_resolve_direct_inputs "${selection_args[@]}" || return 1
 
   if [[ "${#resolved[@]}" -eq 0 ]]; then
+    if output_is_json; then
+      reporting_json_print_drift "[]" 0 0 0 0 0 "No packages resolved from the requested selectors"
+      return 0
+    fi
     log_warn "No packages resolved from the requested selectors"
     return 0
   fi
@@ -115,30 +173,52 @@ cmd_drift() {
     case "$status" in
       clean)
         clean_count=$((clean_count + 1))
-        printf '[clean] %s (%s)\n' "$pkg" "$target"
+        if ! output_is_json; then
+          printf '[clean] %s (%s)\n' "$pkg" "$target"
+        fi
         ;;
       drifted)
         drifted_count=$((drifted_count + 1))
         exit_status=1
-        printf '[drifted] %s (%s)\n' "$pkg" "$target"
-        if [[ -n "$detail" ]]; then
+        if ! output_is_json; then
+          printf '[drifted] %s (%s)\n' "$pkg" "$target"
+        fi
+        if [[ -n "$detail" ]] && ! output_is_json; then
           printf '%s\n' "$detail"
         fi
         ;;
       unavailable)
         unavailable_count=$((unavailable_count + 1))
-        printf '[unavailable] %s (%s): %s\n' "$pkg" "$target" "$detail"
+        if ! output_is_json; then
+          printf '[unavailable] %s (%s): %s\n' "$pkg" "$target" "$detail"
+        fi
         ;;
       not-applicable)
         not_applicable_count=$((not_applicable_count + 1))
-        printf '[not-applicable] %s: %s\n' "$pkg" "$detail"
+        if ! output_is_json; then
+          printf '[not-applicable] %s: %s\n' "$pkg" "$detail"
+        fi
         ;;
       *)
         log_error "Unknown drift status '$status' for package '$pkg'"
         return 1
         ;;
     esac
+
+    detail_json="$(output_json_string "$detail")"
+    package_results+=("{\"package\":$(output_json_string "$pkg"),\"status\":$(output_json_string "$status"),\"target\":$(output_json_string "$target"),\"detail\":$detail_json}")
   done
+
+  if output_is_json; then
+    reporting_json_print_drift \
+      "$(output_json_array "${package_results[@]}")" \
+      "$clean_count" \
+      "$drifted_count" \
+      "$unavailable_count" \
+      "$not_applicable_count" \
+      "$exit_status"
+    return "$exit_status"
+  fi
 
   reporting_print_drift_summary \
     "$clean_count" \
@@ -159,27 +239,41 @@ cmd_status() {
   local missing_desired_count=0
   local installed_unselected_count=0
   local exit_status=0
+  local desired_results=()
+  local unselected_results=()
 
   read_lines_into_array desired desired_state_resolve_packages || return 1
   if [[ "${#desired[@]}" -eq 0 ]]; then
+    if output_is_json; then
+      reporting_json_print_status "[]" "[]" 0 0 0 0 0 "No desired state is configured. Save a selection or set a profile first."
+      return 0
+    fi
     log_warn "No desired state is configured. Save a selection or set a profile first."
     return 0
   fi
 
   desired_count="${#desired[@]}"
-  printf 'Desired packages:\n'
-  for desired_pkg in "${desired[@]}"; do
-    printf '  - %s\n' "$desired_pkg"
-  done
+  if ! output_is_json; then
+    printf 'Desired packages:\n'
+    for desired_pkg in "${desired[@]}"; do
+      printf '  - %s\n' "$desired_pkg"
+    done
+  fi
 
   for desired_pkg in "${desired[@]}"; do
     if executor_package_installed "$desired_pkg"; then
       installed_desired_count=$((installed_desired_count + 1))
-      printf '[desired-installed] %s\n' "$desired_pkg"
+      if ! output_is_json; then
+        printf '[desired-installed] %s\n' "$desired_pkg"
+      fi
+      desired_results+=("{\"package\":$(output_json_string "$desired_pkg"),\"status\":$(output_json_string "installed")}")
     else
       missing_desired_count=$((missing_desired_count + 1))
       exit_status=1
-      printf '[desired-missing] %s\n' "$desired_pkg"
+      if ! output_is_json; then
+        printf '[desired-missing] %s\n' "$desired_pkg"
+      fi
+      desired_results+=("{\"package\":$(output_json_string "$desired_pkg"),\"status\":$(output_json_string "missing")}")
     fi
   done
 
@@ -195,8 +289,23 @@ cmd_status() {
 
   installed_unselected_count="${#installed_unselected[@]}"
   for pkg in "${installed_unselected[@]+"${installed_unselected[@]}"}"; do
-    printf '[installed-unselected] %s\n' "$pkg"
+    if ! output_is_json; then
+      printf '[installed-unselected] %s\n' "$pkg"
+    fi
+    unselected_results+=("{\"package\":$(output_json_string "$pkg")}")
   done
+
+  if output_is_json; then
+    reporting_json_print_status \
+      "$(output_json_array "${desired_results[@]}")" \
+      "$(output_json_array "${unselected_results[@]}")" \
+      "$desired_count" \
+      "$installed_desired_count" \
+      "$missing_desired_count" \
+      "$installed_unselected_count" \
+      "$exit_status"
+    return "$exit_status"
+  fi
 
   reporting_print_status_summary \
     "$desired_count" \

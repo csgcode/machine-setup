@@ -6,6 +6,7 @@ CLI_PACKAGES=()
 CLI_TAGS=()
 CLI_PROFILES=()
 CLI_SHOW_HELP=0
+CLI_OUTPUT_FORMAT="text"
 
 CLI_EXIT_OK=0
 CLI_EXIT_RUNTIME_ERROR=1
@@ -15,6 +16,7 @@ cli_usage() {
   cat <<USAGE
 Usage:
   setup [menu] [--dry-run] [--yes] [--verbose]
+  setup [subcommand] --format <text|json>
   setup list
   setup doctor
   setup status
@@ -35,6 +37,7 @@ Examples:
   setup check --package oh-my-zsh
   setup apply-config --tag shell
   setup drift --tag shell
+  setup status --format json
   setup install --group shell --dry-run
 USAGE
 }
@@ -52,6 +55,7 @@ parse_cli_args() {
   CLI_TAGS=()
   CLI_PROFILES=()
   CLI_SHOW_HELP=0
+  CLI_OUTPUT_FORMAT="text"
 
   if [[ $# -gt 0 ]] && [[ "$1" != --* ]]; then
     CLI_SUBCOMMAND="$1"
@@ -103,6 +107,22 @@ parse_cli_args() {
       --verbose)
         SETUP_VERBOSE=1
         shift
+        ;;
+      --format)
+        if [[ $# -lt 2 || "$2" == --* ]]; then
+          cli_usage_error "Missing value for --format"
+          return $?
+        fi
+        case "$2" in
+          text|json)
+            CLI_OUTPUT_FORMAT="$2"
+            ;;
+          *)
+            cli_usage_error "Unsupported format: $2"
+            return $?
+            ;;
+        esac
+        shift 2
         ;;
       -h|--help)
         CLI_SHOW_HELP=1

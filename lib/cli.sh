@@ -6,9 +6,11 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SETUP_DRY_RUN=0
 SETUP_YES=0
 SETUP_VERBOSE=0
+SETUP_SUPPRESS_LOGS=0
 
 source "$ROOT_DIR/lib/common/log.sh"
 source "$ROOT_DIR/lib/common/checks.sh"
+source "$ROOT_DIR/lib/common/output.sh"
 source "$ROOT_DIR/lib/core/desired_state.sh"
 source "$ROOT_DIR/lib/core/executor.sh"
 source "$ROOT_DIR/lib/core/planner.sh"
@@ -28,10 +30,14 @@ source "$ROOT_DIR/lib/installers/shell.sh"
 source "$ROOT_DIR/lib/ui/interactive.sh"
 
 main() {
-  export SETUP_DRY_RUN SETUP_YES SETUP_VERBOSE ROOT_DIR
+  export SETUP_DRY_RUN SETUP_YES SETUP_VERBOSE SETUP_SUPPRESS_LOGS ROOT_DIR
   parse_cli_args "$@" || return $?
   if [[ "$CLI_SHOW_HELP" -eq 1 ]]; then
     return 0
+  fi
+  if output_is_json; then
+    SETUP_SUPPRESS_LOGS=1
+    export SETUP_SUPPRESS_LOGS
   fi
   dispatch_cli
 }

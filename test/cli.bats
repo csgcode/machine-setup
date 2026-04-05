@@ -42,6 +42,18 @@ setup() {
   [[ "$output" == *"Missing value for --profile"* ]]
 }
 
+@test "missing format value is a usage error" {
+  run "$REPO_ROOT/bin/setup" status --format
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"Missing value for --format"* ]]
+}
+
+@test "unsupported format is a usage error" {
+  run "$REPO_ROOT/bin/setup" status --format yaml
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"Unsupported format: yaml"* ]]
+}
+
 @test "group selector is rejected for apply-config" {
   run "$REPO_ROOT/bin/setup" apply-config --group shell
   [ "$status" -eq 2 ]

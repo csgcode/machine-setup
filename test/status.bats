@@ -79,3 +79,18 @@ EOF
   [ "$status" -eq 0 ]
   [[ "$output" == *"No desired state is configured"* ]]
 }
+
+@test "status --format json emits merged desired-state details" {
+  run env \
+    HOME="$TEST_HOME" \
+    PATH="$TEST_BIN:/usr/bin:/bin" \
+    PACKAGES_FILE="$FIXTURE_PACKAGES" \
+    TAGS_FILE="$FIXTURE_TAGS" \
+    PROFILES_FILE="$FIXTURE_PROFILES" \
+    MACHINE_SETUP_STATE_PATH="$TEST_STATE" \
+    "$REPO_ROOT/bin/setup" status --format json
+
+  [ "$status" -eq 1 ]
+  run ruby -rjson -e 'data=JSON.parse(ARGF.read); abort unless data["summary"]["desired"] == 3; abort unless data["desired_packages"].any?{|pkg| pkg["package"]=="gamma" && pkg["status"]=="missing"}; abort unless data["installed_unselected"].any?{|pkg| pkg["package"]=="beta"}' <<<"$output"
+  [ "$status" -eq 0 ]
+}

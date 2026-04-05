@@ -29,7 +29,11 @@ The default flow is a guided prompt sequence:
 
 ```bash
 ./bin/setup status
+./bin/setup status --format json
 ```
+
+`list`, `doctor`, `status`, and `drift` also support `--format json` for
+machine-readable output.
 
 ## Install one group
 
@@ -82,6 +86,7 @@ Legacy compatibility path during migration:
 ./bin/setup drift --package oh-my-zsh
 ./bin/setup drift --tag shell
 ./bin/setup drift --profile work-laptop
+./bin/setup drift --tag shell --format json
 ```
 
 Shell configuration is no longer copied into `$HOME` by this repo. Dotfiles are
