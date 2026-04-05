@@ -98,7 +98,7 @@ collect_capture_npm_globals() {
   local lines=()
   local parsed=()
   local line=""
-  local base=""
+  local package_name=""
   local first_line=1
 
   collect_capture_lines lines npm list -g --depth=0 --location=global --parseable || true
@@ -108,10 +108,18 @@ collect_capture_npm_globals() {
       first_line=0
       continue
     fi
-    base="$(basename "$line")"
-    [[ "$base" == "lib" ]] && continue
-    [[ "$base" == "node_modules" ]] && continue
-    read_lines_into_array parsed collect_append_unique "$base" "${parsed[@]+"${parsed[@]}"}"
+    package_name="$line"
+    if [[ "$package_name" == */node_modules/* ]]; then
+      package_name="${package_name##*/node_modules/}"
+    else
+      package_name="$(basename "$package_name")"
+      if [[ "$(basename "$(dirname "$line")")" == @* ]]; then
+        package_name="$(basename "$(dirname "$line")")/$package_name"
+      fi
+    fi
+    [[ "$package_name" == "lib" ]] && continue
+    [[ "$package_name" == "node_modules" ]] && continue
+    read_lines_into_array parsed collect_append_unique "$package_name" "${parsed[@]+"${parsed[@]}"}"
   done
 
   eval "$target_var=()"
@@ -152,6 +160,7 @@ collect_write_command_section() {
 
 mkdir -p "$REPORT_DIR"
 
+brew_formulae=()
 brew_leaves=()
 brew_casks=()
 brew_services=()
@@ -160,6 +169,8 @@ ignored_package_ids=()
 ignored_formulae=()
 ignored_casks=()
 ignored_npm=()
+ignored_manifest_formulae=()
+ignored_manifest_casks=()
 manifest_formulae=()
 manifest_casks=()
 tracked_installed=()
@@ -176,6 +187,7 @@ formula=""
 cask=""
 npm_pkg=""
 
+collect_capture_lines brew_formulae brew list --formula || true
 collect_capture_lines brew_leaves brew leaves || true
 collect_capture_lines brew_casks brew list --cask || true
 collect_capture_lines brew_services brew services list || true
@@ -189,10 +201,6 @@ read_lines_into_array all_packages list_all_packages
 for pkg in "${all_packages[@]}"; do
   [[ -z "$pkg" ]] && continue
 
-  if collect_array_contains "$pkg" "${ignored_package_ids[@]+"${ignored_package_ids[@]}"}"; then
-    continue
-  fi
-
   kind="$(package_installer_kind "$pkg" | head -n1)"
   target="$(package_install_target "$pkg" | head -n1)"
   check_cmd="$(package_check_command "$pkg" | head -n1)"
@@ -200,22 +208,30 @@ for pkg in "${all_packages[@]}"; do
   case "$kind" in
     brew_formula)
       if [[ -n "$target" ]]; then
-        read_lines_into_array manifest_formulae collect_append_unique "$target" "${manifest_formulae[@]+"${manifest_formulae[@]}"}"
+        if collect_array_contains "$pkg" "${ignored_package_ids[@]+"${ignored_package_ids[@]}"}"; then
+          read_lines_into_array ignored_manifest_formulae collect_append_unique "$target" "${ignored_manifest_formulae[@]+"${ignored_manifest_formulae[@]}"}"
+        else
+          read_lines_into_array manifest_formulae collect_append_unique "$target" "${manifest_formulae[@]+"${manifest_formulae[@]}"}"
+        fi
       fi
-      if [[ -n "$target" ]] && ! collect_array_contains "$target" "${ignored_formulae[@]+"${ignored_formulae[@]}"}" && collect_array_contains "$target" "${brew_leaves[@]+"${brew_leaves[@]}"}"; then
+      if [[ -n "$target" ]] && ! collect_array_contains "$target" "${ignored_formulae[@]+"${ignored_formulae[@]}"}" && ! collect_array_contains "$target" "${ignored_manifest_formulae[@]+"${ignored_manifest_formulae[@]}"}" && collect_array_contains "$target" "${brew_formulae[@]+"${brew_formulae[@]}"}"; then
         tracked_installed+=("$pkg [brew_formula:$target]")
       fi
       ;;
     brew_cask)
       if [[ -n "$target" ]]; then
-        read_lines_into_array manifest_casks collect_append_unique "$target" "${manifest_casks[@]+"${manifest_casks[@]}"}"
+        if collect_array_contains "$pkg" "${ignored_package_ids[@]+"${ignored_package_ids[@]}"}"; then
+          read_lines_into_array ignored_manifest_casks collect_append_unique "$target" "${ignored_manifest_casks[@]+"${ignored_manifest_casks[@]}"}"
+        else
+          read_lines_into_array manifest_casks collect_append_unique "$target" "${manifest_casks[@]+"${manifest_casks[@]}"}"
+        fi
       fi
-      if [[ -n "$target" ]] && ! collect_array_contains "$target" "${ignored_casks[@]+"${ignored_casks[@]}"}" && collect_array_contains "$target" "${brew_casks[@]+"${brew_casks[@]}"}"; then
+      if [[ -n "$target" ]] && ! collect_array_contains "$target" "${ignored_casks[@]+"${ignored_casks[@]}"}" && ! collect_array_contains "$target" "${ignored_manifest_casks[@]+"${ignored_manifest_casks[@]}"}" && collect_array_contains "$target" "${brew_casks[@]+"${brew_casks[@]}"}"; then
         tracked_installed+=("$pkg [brew_cask:$target]")
       fi
       ;;
     shell_component)
-      if [[ -n "$check_cmd" ]] && bash -lc "$check_cmd" >/dev/null 2>&1; then
+      if ! collect_array_contains "$pkg" "${ignored_package_ids[@]+"${ignored_package_ids[@]}"}" && [[ -n "$check_cmd" ]] && bash -lc "$check_cmd" >/dev/null 2>&1; then
         tracked_installed+=("$pkg [shell_component:$target]")
       fi
       ;;
@@ -226,6 +242,9 @@ for formula in "${brew_leaves[@]+"${brew_leaves[@]}"}"; do
   if collect_array_contains "$formula" "${ignored_formulae[@]+"${ignored_formulae[@]}"}"; then
     continue
   fi
+  if collect_array_contains "$formula" "${ignored_manifest_formulae[@]+"${ignored_manifest_formulae[@]}"}"; then
+    continue
+  fi
   if ! collect_array_contains "$formula" "${manifest_formulae[@]+"${manifest_formulae[@]}"}"; then
     missing_formulae+=("$formula")
   fi
@@ -233,6 +252,9 @@ done
 
 for cask in "${brew_casks[@]+"${brew_casks[@]}"}"; do
   if collect_array_contains "$cask" "${ignored_casks[@]+"${ignored_casks[@]}"}"; then
+    continue
+  fi
+  if collect_array_contains "$cask" "${ignored_manifest_casks[@]+"${ignored_manifest_casks[@]}"}"; then
     continue
   fi
   if ! collect_array_contains "$cask" "${manifest_casks[@]+"${manifest_casks[@]}"}"; then

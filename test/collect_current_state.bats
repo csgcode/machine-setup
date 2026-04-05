@@ -19,10 +19,12 @@ set -euo pipefail
 
 case "${1:-}" in
   leaves)
-    printf '%s\n' alpha-formula ignored-formula missing-formula
+    printf '%s\n' alpha-formula missing-formula
     ;;
   list)
-    if [[ "${2:-}" == "--cask" ]]; then
+    if [[ "${2:-}" == "--formula" ]]; then
+      printf '%s\n' alpha-formula ignored-formula missing-formula dependency-formula
+    elif [[ "${2:-}" == "--cask" ]]; then
       printf '%s\n' alpha-app ignored-cask missing-cask
     fi
     ;;
@@ -40,12 +42,12 @@ EOF
 set -euo pipefail
 
 if [[ "${1:-}" == "list" && "${2:-}" == "-g" && "${5:-}" == "--parseable" ]]; then
-  printf '%s\n' "/tmp/npm-global" "/tmp/npm-global/tool-one" "/tmp/npm-global/ignored-tool"
+  printf '%s\n' "/tmp/npm-global" "/tmp/npm-global/tool-one" "/tmp/npm-global/node_modules/@angular/cli" "/tmp/npm-global/ignored-tool"
   exit 0
 fi
 
 if [[ "${1:-}" == "list" && "${2:-}" == "-g" ]]; then
-  printf '%s\n' "tool-one@1.0.0"
+  printf '%s\n' "tool-one@1.0.0" "@angular/cli@2.0.0"
   exit 0
 fi
 EOF
@@ -78,7 +80,10 @@ EOF
   [[ "$output" == *"missing-formula"* ]]
   [[ "$output" == *"missing-cask"* ]]
   [[ "$output" == *"tool-one"* ]]
+  [[ "$output" == *"@angular/cli"* ]]
   [[ "$output" != *"shellpkg [shell_component:shellpkg]"* ]]
+  [[ "$output" != *$'## Installed brew formulae missing from manifest\n```\ndependency-formula'* ]]
+  [[ "$output" != *"ignored-formula"* ]]
   [[ "$output" != *$'## Installed brew formulae missing from manifest\n```\nignored-formula'* ]]
   [[ "$output" != *$'## Installed brew casks missing from manifest\n```\nignored-cask'* ]]
   [[ "$output" != *$'## Installed npm globals missing from manifest\n```\nignored-tool'* ]]
