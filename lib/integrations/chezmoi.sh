@@ -50,8 +50,16 @@ chezmoi_is_installed() {
   command_exists chezmoi
 }
 
+chezmoi_source_path() {
+  chezmoi_is_installed || return 1
+  chezmoi source-path 2>/dev/null
+}
+
 chezmoi_is_initialized() {
-  chezmoi_is_installed && chezmoi source-path >/dev/null 2>&1
+  local source_path=""
+
+  source_path="$(chezmoi_source_path)" || return 1
+  [[ -d "$source_path" ]]
 }
 
 chezmoi_install() {
@@ -106,6 +114,15 @@ chezmoi_init() {
 
   log_info "Initializing chezmoi"
   chezmoi_run_command chezmoi init --apply=false "$repo_url"
+
+  if [[ "${SETUP_DRY_RUN:-0}" -eq 1 ]]; then
+    return 0
+  fi
+
+  if ! chezmoi_is_initialized; then
+    log_error "Chezmoi init did not create a usable source directory"
+    return 1
+  fi
 }
 
 chezmoi_ensure_ready() {

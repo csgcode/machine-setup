@@ -11,7 +11,7 @@ setup() {
   FIXTURE_TAGS="$REPO_ROOT/test/fixtures/tags-basic.yaml"
   FIXTURE_GROUPS="$REPO_ROOT/test/fixtures/groups-basic.yaml"
 
-  mkdir -p "$TEST_HOME" "$TEST_BIN"
+  mkdir -p "$TEST_HOME" "$TEST_BIN" "$TEST_HOME/.local/share/chezmoi"
   : > "$TEST_LOG"
 
   cat > "$TEST_BIN/chezmoi" <<'EOF'

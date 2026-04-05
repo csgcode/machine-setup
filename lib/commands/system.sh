@@ -82,13 +82,8 @@ cmd_bootstrap() {
   local now_installed=0
   local now_initialized=0
 
-  if chezmoi_is_installed; then
-    was_installed=1
-  fi
-
-  if chezmoi_is_initialized; then
-    was_initialized=1
-  fi
+  chezmoi_is_installed && was_installed=1
+  chezmoi_is_initialized && was_initialized=1
 
   if [[ "$was_installed" -eq 0 ]]; then
     actions+=("\"install\"")
@@ -105,13 +100,8 @@ cmd_bootstrap() {
     chezmoi_ensure_ready "$repo_url" || return 1
   fi
 
-  if chezmoi_is_installed; then
-    now_installed=1
-  fi
-
-  if chezmoi_is_initialized; then
-    now_initialized=1
-  fi
+  chezmoi_is_installed && now_installed=1
+  chezmoi_is_initialized && now_initialized=1
 
   if output_is_json; then
     printf '{\n'

@@ -23,6 +23,10 @@ printf 'chezmoi %s\n' "$*" >> "$log_file"
 
 case "${1:-}" in
   source-path)
+    if [[ -n "${CHEZMOI_SOURCE_PATH_OVERRIDE:-}" ]]; then
+      printf '%s\n' "${CHEZMOI_SOURCE_PATH_OVERRIDE}"
+      exit 0
+    fi
     if [[ -f "${CHEZMOI_INITIALIZED_FILE:?}" ]]; then
       printf '%s\n' "${CHEZMOI_SOURCE_PATH:-$HOME/.local/share/chezmoi}"
       exit 0
@@ -30,6 +34,7 @@ case "${1:-}" in
     exit 1
     ;;
   init)
+    mkdir -p "${CHEZMOI_SOURCE_PATH:-$HOME/.local/share/chezmoi}"
     touch "${CHEZMOI_INITIALIZED_FILE:?}"
     exit 0
     ;;
@@ -98,6 +103,25 @@ EOF
   [[ "$output" == *$'---\nbrew list --formula chezmoi\nbrew install chezmoi\nchezmoi source-path\nchezmoi source-path\nchezmoi init --apply=false https://example.com/dotfiles.git'* ]]
 }
 
+@test "chezmoi is not initialized when source-path exists but directory is missing" {
+  cp "$CHEZMOI_TEMPLATE" "$TEST_BIN/chezmoi"
+  chmod +x "$TEST_BIN/chezmoi"
+
+  run bash -c '
+    export HOME="'"$TEST_HOME"'"
+    export PATH="'"$TEST_BIN"':/usr/bin:/bin"
+    export CHEZMOI_LOG="'"$CHEZMOI_LOG"'"
+    export CHEZMOI_SOURCE_PATH_OVERRIDE="$HOME/.local/share/chezmoi"
+    source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
+    source "'"$REPO_ROOT"'/lib/installers/brew.sh"
+    source "'"$REPO_ROOT"'/lib/core/state.sh"
+    source "'"$REPO_ROOT"'/lib/integrations/chezmoi.sh"
+    chezmoi_is_initialized
+  '
+  [ "$status" -eq 1 ]
+}
+
 @test "chezmoi ensure ready fails cleanly without repo url in non-interactive mode" {
   cp "$CHEZMOI_TEMPLATE" "$TEST_BIN/chezmoi"
   chmod +x "$TEST_BIN/chezmoi"
@@ -123,6 +147,7 @@ EOF
   cp "$CHEZMOI_TEMPLATE" "$TEST_BIN/chezmoi"
   chmod +x "$TEST_BIN/chezmoi"
   touch "$CHEZMOI_INITIALIZED_FILE"
+  mkdir -p "$TEST_HOME/.local/share/chezmoi"
 
   run bash -c '
     export HOME="'"$TEST_HOME"'"
@@ -151,6 +176,7 @@ EOF
   cp "$CHEZMOI_TEMPLATE" "$TEST_BIN/chezmoi"
   chmod +x "$TEST_BIN/chezmoi"
   touch "$CHEZMOI_INITIALIZED_FILE"
+  mkdir -p "$TEST_HOME/.local/share/chezmoi"
 
   run bash -c '
     export HOME="'"$TEST_HOME"'"
@@ -173,6 +199,7 @@ EOF
   cp "$CHEZMOI_TEMPLATE" "$TEST_BIN/chezmoi"
   chmod +x "$TEST_BIN/chezmoi"
   touch "$CHEZMOI_INITIALIZED_FILE"
+  mkdir -p "$TEST_HOME/.local/share/chezmoi"
 
   run bash -c '
     export HOME="'"$TEST_HOME"'"
@@ -262,10 +289,38 @@ EOF
   [[ "$output" == *"Missing chezmoi.repo_url configuration"* ]]
 }
 
-@test "bootstrap command dry-run previews install and init without mutation" {
+@test "bootstrap command reads repo url from config file" {
+  cat > "$BATS_TEST_TMPDIR/config.yaml" <<'EOF'
+chezmoi:
+  repo_url: https://config.example/dotfiles.git
+EOF
+
   run env \
     HOME="$TEST_HOME" \
     PATH="$TEST_BIN:/usr/bin:/bin" \
+    MACHINE_SETUP_CONFIG_PATH="$BATS_TEST_TMPDIR/config.yaml" \
+    CHEZMOI_LOG="$CHEZMOI_LOG" \
+    CHEZMOI_INSTALLED_FILE="$CHEZMOI_INSTALLED_FILE" \
+    CHEZMOI_INITIALIZED_FILE="$CHEZMOI_INITIALIZED_FILE" \
+    CHEZMOI_TEMPLATE="$CHEZMOI_TEMPLATE" \
+    TEST_BIN="$TEST_BIN" \
+    "$REPO_ROOT/bin/setup" bootstrap
+
+  [ "$status" -eq 0 ]
+  run cat "$CHEZMOI_LOG"
+  [[ "$output" == *"chezmoi init --apply=false https://config.example/dotfiles.git"* ]]
+}
+
+@test "bootstrap command dry-run previews install and init without mutation" {
+  cat > "$BATS_TEST_TMPDIR/config.yaml" <<'EOF'
+chezmoi:
+  repo_url: https://config.example/dotfiles.git
+EOF
+
+  run env \
+    HOME="$TEST_HOME" \
+    PATH="$TEST_BIN:/usr/bin:/bin" \
+    MACHINE_SETUP_CONFIG_PATH="$BATS_TEST_TMPDIR/config.yaml" \
     CHEZMOI_LOG="$CHEZMOI_LOG" \
     CHEZMOI_INSTALLED_FILE="$CHEZMOI_INSTALLED_FILE" \
     CHEZMOI_INITIALIZED_FILE="$CHEZMOI_INITIALIZED_FILE" \

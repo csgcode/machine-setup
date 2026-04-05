@@ -14,7 +14,7 @@ setup() {
   FIXTURE_PROFILES="$REPO_ROOT/test/fixtures/profiles-basic.yaml"
   TEST_CONFIG="$BATS_TEST_TMPDIR/config.yaml"
 
-  mkdir -p "$TEST_HOME" "$TEST_BIN"
+  mkdir -p "$TEST_HOME" "$TEST_BIN" "$TEST_HOME/.local/share/chezmoi"
   : > "$TEST_LOG"
 
   cat > "$TEST_BIN/brew" <<'EOF'
