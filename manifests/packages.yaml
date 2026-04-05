@@ -11,9 +11,9 @@ packages:
       - app
     installer:
       kind: brew_cask
-      package: aerospace
+      package: nikitabobko/tap/aerospace
     check:
-      command: brew list --cask aerospace >/dev/null 2>&1
+      command: brew list --cask nikitabobko/tap/aerospace >/dev/null 2>&1
     depends_on: []
     config:
       target: .aerospace.toml
