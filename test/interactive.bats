@@ -80,9 +80,9 @@ EOF
   [[ "$output" == *"- alpha"* ]]
 }
 
-@test "interactive tag check flow resolves through the shared backend" {
+@test "interactive package selection supports all packages shortcut" {
   run bash -c '
-    printf "2\n2\n2\ny\n" | env \
+    printf "1\n1\n0\ny\ny\n" | env \
       HOME="'"$TEST_HOME"'" \
       PATH="'"$TEST_BIN"':/usr/bin:/bin" \
       TEST_LOG="'"$TEST_LOG"'" \
@@ -90,11 +90,42 @@ EOF
       TAGS_FILE="'"$FIXTURE_TAGS"'" \
       GROUPS_FILE="'"$FIXTURE_GROUPS"'" \
       PROFILES_FILE="'"$FIXTURE_PROFILES"'" \
+      MACHINE_SETUP_CONFIG_PATH="'"$TEST_CONFIG"'" \
+      MACHINE_SETUP_STATE_PATH="'"$TEST_STATE"'" \
+      CHEZMOI_REPO_URL="https://example.com/dotfiles.git" \
+      "'"$REPO_ROOT"'/bin/setup"
+  '
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"0) All packages"* ]]
+  [[ "$output" == *"  - beta"* ]]
+  [[ "$output" == *"  - alpha"* ]]
+  run cat "$TEST_STATE"
+  [[ "$output" == *"packages:"* ]]
+  [[ "$output" == *"- alpha"* ]]
+  [[ "$output" == *"- beta"* ]]
+}
+
+@test "interactive tag check flow resolves through the shared backend and can save selection" {
+  run bash -c '
+    printf "2\n2\n2\ny\ny\n" | env \
+      HOME="'"$TEST_HOME"'" \
+      PATH="'"$TEST_BIN"':/usr/bin:/bin" \
+      TEST_LOG="'"$TEST_LOG"'" \
+      PACKAGES_FILE="'"$FIXTURE_PACKAGES"'" \
+      TAGS_FILE="'"$FIXTURE_TAGS"'" \
+      GROUPS_FILE="'"$FIXTURE_GROUPS"'" \
+      PROFILES_FILE="'"$FIXTURE_PROFILES"'" \
+      MACHINE_SETUP_STATE_PATH="'"$TEST_STATE"'" \
       "'"$REPO_ROOT"'/bin/setup"
   '
   [ "$status" -eq 1 ]
   [[ "$output" == *"[missing] beta"* ]]
   [[ "$output" == *"[missing] alpha"* ]]
+  [[ "$output" == *"Saved selection to"* ]]
+  run cat "$TEST_STATE"
+  [[ "$output" == *"tags:"* ]]
+  [[ "$output" == *"include:"* ]]
+  [[ "$output" == *"- test"* ]]
 }
 
 @test "interactive flow can be aborted before execution" {

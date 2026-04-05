@@ -90,13 +90,33 @@ interactive_select_values() {
   fi
 
   printf 'Available %ss:\n' "$kind"
+  if [[ "$kind" == "package" ]]; then
+    printf '  0) All packages\n'
+  fi
   local i=1
   for value in "${values[@]}"; do
     printf '  %s) %s\n' "$i" "$value"
     i=$((i + 1))
   done
 
-  input="$(interactive_prompt "Enter comma-separated numbers: ")" || return 1
+  if [[ "$kind" == "package" ]]; then
+    input="$(interactive_prompt "Enter comma-separated numbers (or 0 for all): ")" || return 1
+  else
+    input="$(interactive_prompt "Enter comma-separated numbers: ")" || return 1
+  fi
+
+  if [[ "$kind" == "package" ]]; then
+    case "${input// /}" in
+      0|all|ALL|All)
+        selected=("${values[@]}")
+        INTERACTIVE_SELECTED_PACKAGES=("${selected[@]}")
+        INTERACTIVE_SELECTED_TAGS=()
+        INTERACTIVE_SELECTED_PROFILES=()
+        return 0
+        ;;
+    esac
+  fi
+
   IFS=',' read -r -a tokens <<< "$input"
 
   for token in "${tokens[@]}"; do
@@ -283,7 +303,10 @@ cmd_interactive() {
       interactive_maybe_save_selection || return 1
       ;;
     check)
-      cmd_check || return $?
+      local check_status=0
+      cmd_check || check_status=$?
+      interactive_maybe_save_selection || return 1
+      return "$check_status"
       ;;
     apply-config)
       cmd_apply_config || return 1

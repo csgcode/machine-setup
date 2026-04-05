@@ -266,10 +266,10 @@ state_write_machine_state() {
   state_ensure_parent_dir "$path"
 
   STATE_PATH="$path" PROFILE_VALUE="$profile" \
-  PACKAGE_INCLUDES="$(printf '%s\n' "${package_includes[@]}")" \
-  PACKAGE_EXCLUDES="$(printf '%s\n' "${package_excludes[@]}")" \
-  TAG_INCLUDES="$(printf '%s\n' "${tag_includes[@]}")" \
-  TAG_EXCLUDES="$(printf '%s\n' "${tag_excludes[@]}")" \
+  PACKAGE_INCLUDES="$(printf '%s\n' "${package_includes[@]+"${package_includes[@]}"}")" \
+  PACKAGE_EXCLUDES="$(printf '%s\n' "${package_excludes[@]+"${package_excludes[@]}"}")" \
+  TAG_INCLUDES="$(printf '%s\n' "${tag_includes[@]+"${tag_includes[@]}"}")" \
+  TAG_EXCLUDES="$(printf '%s\n' "${tag_excludes[@]+"${tag_excludes[@]}"}")" \
   ruby -ryaml -e '
     path=ENV["STATE_PATH"]
     data={
