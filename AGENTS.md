@@ -9,7 +9,7 @@ Current scope is `core` + `shell` groups only.
 - Manifests: `manifests/groups.yaml`, `manifests/packages.yaml`
 - Installers: `lib/installers/*`
 - Curated zsh config: `dotfiles/zshrc.base`
-- Docs: `docs/USAGE.md`, `docs/ADDING_PACKAGES.md`, `docs/DECISIONS.md`
+- Docs: `docs/users/USAGE.md`, `docs/maintainers/ADDING_PACKAGES.md`, `docs/maintainers/DECISIONS.md`
 
 ## Next Steps (Priority Order)
 1. Validate current flows in dry-run mode only:
@@ -63,7 +63,7 @@ When adding a new setup capability:
 2. Update `manifests/groups.yaml`
 3. Add/extend installer handler if needed
 4. Validate with dry-run
-5. Update docs in `docs/USAGE.md` and `docs/DECISIONS.md`
+5. Update docs in `docs/users/USAGE.md` and `docs/maintainers/DECISIONS.md`
 
 ## Quick Commands
 - Interactive: `./bin/setup`

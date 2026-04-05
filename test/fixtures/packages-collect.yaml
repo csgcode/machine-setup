@@ -29,6 +29,20 @@ packages:
       command: brew list --cask alpha-app >/dev/null 2>&1
     depends_on: []
 
+  - id: ignoredpkg
+    name: Ignored Formula Package
+    group: test
+    platform:
+      - macos
+    tags:
+      - collect
+    installer:
+      kind: brew_formula
+      package: ignored-formula
+    check:
+      command: brew list --formula ignored-formula >/dev/null 2>&1
+    depends_on: []
+
   - id: shellpkg
     name: Shell Package
     group: test

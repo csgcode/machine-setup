@@ -1,5 +1,7 @@
 # Adding Packages
 
+For the full operator guide, see [WORKFLOWS.md](/Users/gokul/Dev/machine-setup/docs/maintainers/WORKFLOWS.md).
+
 1. Add a package entry in `manifests/packages.yaml` with:
 - `id`
 - `name`

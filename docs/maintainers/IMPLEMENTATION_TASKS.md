@@ -3,7 +3,7 @@
 ## Purpose
 
 This document turns the project plan into an execution sequence. It should be
-used with [PROJECT_PLAN.md](/Users/gokul/Dev/machine-setup/docs/PROJECT_PLAN.md)
+used with [PROJECT_PLAN.md](/Users/gokul/Dev/machine-setup/docs/maintainers/PROJECT_PLAN.md)
 and updated as work is completed.
 
 ## Execution Principles

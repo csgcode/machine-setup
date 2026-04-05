@@ -54,8 +54,8 @@ Check local prerequisites:
 - package catalog: `manifests/packages.yaml`
 - tags: `manifests/tags.yaml`
 - profiles: `manifests/profiles.yaml`
-- CLI docs: `docs/USAGE.md`
-- implementation tracker: `docs/IMPLEMENTATION_TASKS.md`
+- user docs: `docs/users/`
+- maintainer docs: `docs/maintainers/`
 - validation: `scripts/validate.sh`
 
 ## Initial Setup
@@ -714,7 +714,10 @@ Use this when:
 
 ## Additional Docs
 
-- usage examples: [docs/USAGE.md](/Users/gokul/Dev/machine-setup/docs/USAGE.md)
-- project plan: [docs/PROJECT_PLAN.md](/Users/gokul/Dev/machine-setup/docs/PROJECT_PLAN.md)
-- implementation tracker: [docs/IMPLEMENTATION_TASKS.md](/Users/gokul/Dev/machine-setup/docs/IMPLEMENTATION_TASKS.md)
-- package inventory review: [docs/CURRENT_PACKAGE_INVENTORY.md](/Users/gokul/Dev/machine-setup/docs/CURRENT_PACKAGE_INVENTORY.md)
+- user docs index: [docs/users/README.md](/Users/gokul/Dev/machine-setup/docs/users/README.md)
+- usage examples: [docs/users/USAGE.md](/Users/gokul/Dev/machine-setup/docs/users/USAGE.md)
+- maintainer docs index: [docs/maintainers/README.md](/Users/gokul/Dev/machine-setup/docs/maintainers/README.md)
+- common maintenance workflows: [docs/maintainers/WORKFLOWS.md](/Users/gokul/Dev/machine-setup/docs/maintainers/WORKFLOWS.md)
+- project plan: [docs/maintainers/PROJECT_PLAN.md](/Users/gokul/Dev/machine-setup/docs/maintainers/PROJECT_PLAN.md)
+- implementation tracker: [docs/maintainers/IMPLEMENTATION_TASKS.md](/Users/gokul/Dev/machine-setup/docs/maintainers/IMPLEMENTATION_TASKS.md)
+- package inventory review: [docs/maintainers/CURRENT_PACKAGE_INVENTORY.md](/Users/gokul/Dev/machine-setup/docs/maintainers/CURRENT_PACKAGE_INVENTORY.md)
