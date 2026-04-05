@@ -638,6 +638,7 @@ Use JSON output when:
 
 Current packages in the repo:
 
+- `aerospace`
 - `bash`
 - `bat`
 - `codex`

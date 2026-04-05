@@ -2,6 +2,7 @@ groups:
   core:
     description: Core CLI tools for daily development.
     packages:
+      - aerospace
       - bash
       - bat
       - gnu-sed
