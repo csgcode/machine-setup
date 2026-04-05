@@ -1,0 +1,59 @@
+schema_version: 1
+
+packages:
+  - id: alpha
+    name: Alpha
+    group: test
+    platform:
+      - macos
+    tags:
+      - work
+    installer:
+      kind: brew_formula
+      package: alpha
+    check:
+      command: command -v alpha >/dev/null 2>&1
+    depends_on:
+      - delta
+
+  - id: beta
+    name: Beta
+    group: test
+    platform:
+      - macos
+    tags:
+      - bundle
+    installer:
+      kind: brew_formula
+      package: beta
+    check:
+      command: command -v beta >/dev/null 2>&1
+    depends_on: []
+
+  - id: gamma
+    name: Gamma
+    group: test
+    platform:
+      - macos
+    tags:
+      - extra
+    installer:
+      kind: brew_formula
+      package: gamma
+    check:
+      command: command -v gamma >/dev/null 2>&1
+    depends_on: []
+
+  - id: delta
+    name: Delta
+    group: test
+    platform:
+      - macos
+    tags:
+      - support
+    installer:
+      kind: brew_formula
+      package: delta
+    check:
+      command: command -v delta >/dev/null 2>&1
+    depends_on: []

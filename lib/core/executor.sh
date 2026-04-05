@@ -19,12 +19,22 @@ executor_selection_args() {
   printf '%s\n' "${args[@]}"
 }
 
-executor_check_package() {
+executor_package_installed() {
   local pkg="$1"
   local check_cmd=""
 
   check_cmd="$(package_check_command "$pkg" | head -n1)"
   if [[ -n "$check_cmd" ]] && eval "$check_cmd"; then
+    return 0
+  fi
+
+  return 1
+}
+
+executor_check_package() {
+  local pkg="$1"
+
+  if executor_package_installed "$pkg"; then
     printf '[ok] %s\n' "$pkg"
     return 0
   fi
@@ -70,7 +80,7 @@ executor_execute_plan() {
           continue
         fi
 
-        if executor_check_package "$pkg" >/dev/null 2>&1; then
+        if executor_package_installed "$pkg"; then
           log_info "Already installed: $pkg"
           continue
         fi

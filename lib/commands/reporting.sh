@@ -17,62 +17,6 @@ reporting_selection_args_or_error() {
   printf '%s\n' "${selection_args[@]}"
 }
 
-reporting_resolve_requested_packages() {
-  local resolved=()
-  local mode=""
-  local value=""
-  local pkg=""
-
-  validate_manifest_schema || return 1
-
-  while [[ $# -gt 0 ]]; do
-    mode="$1"
-    value="${2:-}"
-
-    case "$mode" in
-      --package)
-        if [[ -z "$value" ]]; then
-          log_error "Missing value for --package"
-          return 1
-        fi
-        if ! package_exists "$value"; then
-          log_error "Unknown package: $value"
-          return 1
-        fi
-        if ! selection_array_contains "$value" "${resolved[@]+"${resolved[@]}"}"; then
-          resolved+=("$value")
-        fi
-        shift 2
-        ;;
-      --tag)
-        if [[ -z "$value" ]]; then
-          log_error "Missing value for --tag"
-          return 1
-        fi
-        if ! tag_exists "$value"; then
-          log_error "Unknown tag: $value"
-          return 1
-        fi
-        while IFS= read -r pkg; do
-          [[ -z "$pkg" ]] && continue
-          if ! selection_array_contains "$pkg" "${resolved[@]+"${resolved[@]}"}"; then
-            resolved+=("$pkg")
-          fi
-        done < <(tag_packages "$value")
-        shift 2
-        ;;
-      *)
-        log_error "Unsupported reporting selection input: $mode"
-        return 1
-        ;;
-    esac
-  done
-
-  if [[ "${#resolved[@]}" -gt 0 ]]; then
-    printf '%s\n' "${resolved[@]}"
-  fi
-}
-
 reporting_config_status_for_package() {
   local pkg="$1"
   local strategy=""
@@ -121,6 +65,19 @@ reporting_print_drift_summary() {
     "$clean_count" "$drifted_count" "$unavailable_count" "$not_applicable_count"
 }
 
+reporting_print_status_summary() {
+  local desired_count="$1"
+  local installed_desired_count="$2"
+  local missing_desired_count="$3"
+  local installed_unselected_count="$4"
+
+  printf 'Summary: desired=%s installed=%s missing=%s installed-unselected=%s\n' \
+    "$desired_count" \
+    "$installed_desired_count" \
+    "$missing_desired_count" \
+    "$installed_unselected_count"
+}
+
 cmd_drift() {
   local selection_args=()
   local resolved=()
@@ -137,7 +94,7 @@ cmd_drift() {
   local exit_status=0
 
   read_lines_into_array selection_args reporting_selection_args_or_error || return $?
-  read_lines_into_array resolved reporting_resolve_requested_packages "${selection_args[@]}" || return 1
+  read_lines_into_array resolved selection_resolve_direct_inputs "${selection_args[@]}" || return 1
 
   if [[ "${#resolved[@]}" -eq 0 ]]; then
     log_warn "No packages resolved from the requested selectors"
@@ -188,6 +145,64 @@ cmd_drift() {
     "$drifted_count" \
     "$unavailable_count" \
     "$not_applicable_count"
+
+  return "$exit_status"
+}
+
+cmd_status() {
+  local desired=()
+  local installed_unselected=()
+  local desired_pkg=""
+  local pkg=""
+  local desired_count=0
+  local installed_desired_count=0
+  local missing_desired_count=0
+  local installed_unselected_count=0
+  local exit_status=0
+
+  read_lines_into_array desired desired_state_resolve_packages || return 1
+  if [[ "${#desired[@]}" -eq 0 ]]; then
+    log_warn "No desired state is configured. Save a selection or set a profile first."
+    return 0
+  fi
+
+  desired_count="${#desired[@]}"
+  printf 'Desired packages:\n'
+  for desired_pkg in "${desired[@]}"; do
+    printf '  - %s\n' "$desired_pkg"
+  done
+
+  for desired_pkg in "${desired[@]}"; do
+    if executor_package_installed "$desired_pkg"; then
+      installed_desired_count=$((installed_desired_count + 1))
+      printf '[desired-installed] %s\n' "$desired_pkg"
+    else
+      missing_desired_count=$((missing_desired_count + 1))
+      exit_status=1
+      printf '[desired-missing] %s\n' "$desired_pkg"
+    fi
+  done
+
+  while IFS= read -r pkg; do
+    [[ -z "$pkg" ]] && continue
+    if selection_array_contains "$pkg" "${desired[@]+"${desired[@]}"}"; then
+      continue
+    fi
+    if executor_package_installed "$pkg"; then
+      installed_unselected+=("$pkg")
+    fi
+  done < <(list_all_packages)
+
+  installed_unselected_count="${#installed_unselected[@]}"
+  for pkg in "${installed_unselected[@]+"${installed_unselected[@]}"}"; do
+    printf '[installed-unselected] %s\n' "$pkg"
+  done
+
+  reporting_print_status_summary \
+    "$desired_count" \
+    "$installed_desired_count" \
+    "$missing_desired_count" \
+    "$installed_unselected_count"
 
   return "$exit_status"
 }

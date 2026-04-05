@@ -25,6 +25,12 @@ The default flow is a guided prompt sequence:
 ./bin/setup doctor
 ```
 
+## Report desired-state status
+
+```bash
+./bin/setup status
+```
+
 ## Install one group
 
 Legacy compatibility path during migration:

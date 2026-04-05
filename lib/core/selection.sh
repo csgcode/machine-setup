@@ -164,8 +164,30 @@ selection_resolve_inputs() {
   validate_manifest_schema || return 1
   selection_reset_state
 
+  local resolved=()
+  read_lines_into_array resolved selection_resolve_direct_inputs "$@" || return 1
+  if [[ "${#resolved[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  local pkg
+  for pkg in "${resolved[@]}"; do
+    [[ -z "$pkg" ]] && continue
+    selection_visit_package "$pkg" || return 1
+  done
+
+  if [[ "${#SELECTION_RESULT[@]}" -gt 0 ]]; then
+    printf '%s\n' "${SELECTION_RESULT[@]}"
+  fi
+}
+
+selection_resolve_direct_inputs() {
+  validate_manifest_schema || return 1
+  selection_reset_state
+
   local mode=""
   local value=""
+  local pkg=""
 
   while [[ $# -gt 0 ]]; do
     mode="$1"
@@ -177,7 +199,13 @@ selection_resolve_inputs() {
           log_error "Missing value for --package"
           return 1
         fi
-        selection_visit_package "$value" || return 1
+        if ! package_exists "$value"; then
+          log_error "Unknown package: $value"
+          return 1
+        fi
+        if ! selection_array_contains "$value" "${SELECTION_RESULT[@]+"${SELECTION_RESULT[@]}"}"; then
+          SELECTION_RESULT+=("$value")
+        fi
         shift 2
         ;;
       --tag)
@@ -189,10 +217,11 @@ selection_resolve_inputs() {
           log_error "Unknown tag: $value"
           return 1
         fi
-        local pkg
         while IFS= read -r pkg; do
           [[ -z "$pkg" ]] && continue
-          selection_visit_package "$pkg" || return 1
+          if ! selection_array_contains "$pkg" "${SELECTION_RESULT[@]+"${SELECTION_RESULT[@]}"}"; then
+            SELECTION_RESULT+=("$pkg")
+          fi
         done < <(tag_packages "$value")
         shift 2
         ;;

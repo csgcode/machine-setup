@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGES_FILE="${PACKAGES_FILE:-$ROOT_DIR/manifests/packages.yaml}"
 GROUPS_FILE="${GROUPS_FILE:-$ROOT_DIR/manifests/groups.yaml}"
 TAGS_FILE="${TAGS_FILE:-$ROOT_DIR/manifests/tags.yaml}"
+PROFILES_FILE="${PROFILES_FILE:-$ROOT_DIR/manifests/profiles.yaml}"
 
 # Uses macOS system Ruby Psych parser for YAML so we don't depend on yq/jq.
 ruby_manifest() {
@@ -17,6 +18,10 @@ package_ruby_manifest() {
 
 tags_ruby_manifest() {
   ruby_manifest "$1" "$TAGS_FILE"
+}
+
+profiles_ruby_manifest() {
+  ruby_manifest "$1" "$PROFILES_FILE"
 }
 
 list_groups() {
@@ -36,6 +41,10 @@ list_all_tags() {
   tags_ruby_manifest 'data=YAML.load_file(ARGV[0]); puts data.fetch("tags", []).map{|t| t["id"]}.sort'
 }
 
+list_all_profiles() {
+  profiles_ruby_manifest 'data=YAML.load_file(ARGV[0]); puts data.fetch("profiles", []).map{|p| p["id"]}.sort'
+}
+
 package_exists() {
   local pkg="$1"
   PKG="$pkg" package_ruby_manifest 'data=YAML.load_file(ARGV[0]); ids=data.fetch("packages", []).map{|p| p["id"]}; exit(ids.include?(ENV["PKG"]) ? 0 : 1)'
@@ -44,6 +53,11 @@ package_exists() {
 tag_exists() {
   local tag="$1"
   TAG="$tag" tags_ruby_manifest 'data=YAML.load_file(ARGV[0]); ids=data.fetch("tags", []).map{|t| t["id"]}; exit(ids.include?(ENV["TAG"]) ? 0 : 1)'
+}
+
+profile_exists() {
+  local profile="$1"
+  PROFILE="$profile" profiles_ruby_manifest 'data=YAML.load_file(ARGV[0]); ids=data.fetch("profiles", []).map{|p| p["id"]}; exit(ids.include?(ENV["PROFILE"]) ? 0 : 1)'
 }
 
 package_field() {
@@ -94,6 +108,26 @@ tag_packages() {
   TAG="$tag" package_ruby_manifest '
     data=YAML.load_file(ARGV[0])
     data.fetch("packages", []).select{|p| (p["tags"] || []).include?(ENV["TAG"]) }.map{|p| p["id"]}.sort.each{|id| puts id }
+  '
+}
+
+profile_packages() {
+  local profile="$1"
+  PROFILE="$profile" profiles_ruby_manifest '
+    data=YAML.load_file(ARGV[0])
+    p=data.fetch("profiles", []).find{|x| x["id"]==ENV["PROFILE"]}
+    arr=(p && p["packages"]) || []
+    puts arr
+  '
+}
+
+profile_tags() {
+  local profile="$1"
+  PROFILE="$profile" profiles_ruby_manifest '
+    data=YAML.load_file(ARGV[0])
+    p=data.fetch("profiles", []).find{|x| x["id"]==ENV["PROFILE"]}
+    arr=(p && p["tags"]) || []
+    puts arr
   '
 }
 
@@ -171,6 +205,36 @@ validate_manifest_schema() {
     ids=tags.map{|t| t["id"]}.compact
     duplicate_ids=ids.group_by{|id| id}.select{|_, arr| arr.length > 1}.keys
     duplicate_ids.each{|id| errors << "tags.yaml: duplicate tag id #{id}" }
+
+    if !errors.empty?
+      warn errors.join("\n")
+      exit 1
+    end
+  '
+
+  PACKAGES_FILE="$PACKAGES_FILE" TAGS_FILE="$TAGS_FILE" profiles_ruby_manifest '
+    data=YAML.load_file(ARGV[0])
+    errors=[]
+    schema_version=data["schema_version"]
+    errors << "profiles.yaml: schema_version must be 1" unless schema_version == 1
+
+    profiles=data.fetch("profiles", [])
+    ids=profiles.map{|p| p["id"]}.compact
+    duplicate_ids=ids.group_by{|id| id}.select{|_, arr| arr.length > 1}.keys
+    duplicate_ids.each{|id| errors << "profiles.yaml: duplicate profile id #{id}" }
+
+    packages=YAML.load_file(ENV["PACKAGES_FILE"]).fetch("packages", []).map{|p| p["id"]}
+    tags=YAML.load_file(ENV["TAGS_FILE"]).fetch("tags", []).map{|t| t["id"]}
+
+    profiles.each do |profile|
+      id=profile["id"] || "<missing-id>"
+      (profile["packages"] || []).each do |pkg|
+        errors << "profiles.yaml: #{id} references unknown package #{pkg}" unless packages.include?(pkg)
+      end
+      (profile["tags"] || []).each do |tag|
+        errors << "profiles.yaml: #{id} references unknown tag #{tag}" unless tags.include?(tag)
+      end
+    end
 
     if !errors.empty?
       warn errors.join("\n")

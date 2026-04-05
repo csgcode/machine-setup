@@ -9,6 +9,7 @@ SETUP_VERBOSE=0
 
 source "$ROOT_DIR/lib/common/log.sh"
 source "$ROOT_DIR/lib/common/checks.sh"
+source "$ROOT_DIR/lib/core/desired_state.sh"
 source "$ROOT_DIR/lib/core/executor.sh"
 source "$ROOT_DIR/lib/core/planner.sh"
 source "$ROOT_DIR/lib/core/state.sh"

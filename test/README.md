@@ -25,4 +25,5 @@ Phase-1 coverage now also includes:
 - direct command workflows for `install`, `check`, and `apply-config`
 - config drift reporting across clean, drifted, unavailable, and
   not-applicable states
+- desired-state reporting from merged profile and local overrides
 - guided interactive workflows, including success and abort paths

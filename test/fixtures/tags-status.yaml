@@ -1,0 +1,11 @@
+schema_version: 1
+
+tags:
+  - id: work
+    description: Work tools.
+  - id: bundle
+    description: Bundled tools.
+  - id: extra
+    description: Extra tools.
+  - id: support
+    description: Support tools.

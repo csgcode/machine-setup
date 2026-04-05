@@ -10,7 +10,7 @@
   legacy compatibility behavior during the redesign.
 - Command model: `install`, `check`, and `apply-config` on package/tag
   selections are the primary direct interface, with `drift` for non-destructive
-  config status reporting.
+  config status reporting and `status` for desired-state reporting.
 - Dotfiles: this repo should not copy dotfiles into `$HOME`; configuration is
   moving to `chezmoi`.
 - Safety: supports `--dry-run`; install flows should avoid direct home-directory

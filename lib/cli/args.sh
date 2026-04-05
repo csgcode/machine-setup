@@ -16,6 +16,7 @@ Usage:
   setup [menu] [--dry-run] [--yes] [--verbose]
   setup list
   setup doctor
+  setup status
   setup install --package <id> [--package <id> ...] [--tag <tag> ...]
   setup install --group <name>    # legacy compatibility path
   setup check --package <id> [--tag <tag> ...]
@@ -26,6 +27,7 @@ Examples:
   setup
   setup list
   setup doctor
+  setup status
   setup install --package oh-my-zsh
   setup install --tag shell
   setup check --package oh-my-zsh
@@ -104,9 +106,9 @@ parse_cli_args() {
   done
 
   case "$CLI_SUBCOMMAND" in
-    menu|list|doctor)
+    menu|list|doctor|status)
       if [[ -n "$CLI_GROUP" || "${#CLI_PACKAGES[@]}" -gt 0 || "${#CLI_TAGS[@]}" -gt 0 ]]; then
-        cli_usage_error "Selectors are only supported with the install subcommand"
+        cli_usage_error "Selectors are only supported with install, check, apply-config, and drift"
         return $?
       fi
       ;;

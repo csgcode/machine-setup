@@ -21,7 +21,7 @@ setup() {
 @test "selectors are rejected for non-install commands" {
   run "$REPO_ROOT/bin/setup" doctor --package bash
   [ "$status" -eq 2 ]
-  [[ "$output" == *"Selectors are only supported with the install subcommand"* ]]
+  [[ "$output" == *"Selectors are only supported with install, check, apply-config, and drift"* ]]
 }
 
 @test "install rejects mixing group and package selectors" {
@@ -46,6 +46,12 @@ setup() {
   run "$REPO_ROOT/bin/setup" --help
   [ "$status" -eq 0 ]
   [[ "$output" == *"setup drift --package <id> [--tag <tag> ...]"* ]]
+}
+
+@test "status is included in help output" {
+  run "$REPO_ROOT/bin/setup" --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"setup status"* ]]
 }
 
 @test "drift requires a selector" {

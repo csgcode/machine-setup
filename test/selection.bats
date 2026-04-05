@@ -12,6 +12,7 @@ setup() {
 @test "selection resolves package dependencies in deterministic order" {
   run bash -lc '
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
     source "'"$REPO_ROOT"'/lib/manifest.sh"
     source "'"$REPO_ROOT"'/lib/core/selection.sh"
     PACKAGES_FILE="'"$FIXTURE_PACKAGES"'"
@@ -26,6 +27,7 @@ setup() {
 @test "selection resolves tags and deduplicates packages" {
   run bash -lc '
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
     source "'"$REPO_ROOT"'/lib/manifest.sh"
     source "'"$REPO_ROOT"'/lib/core/selection.sh"
     PACKAGES_FILE="'"$FIXTURE_PACKAGES"'"
@@ -40,6 +42,7 @@ setup() {
 @test "selection fails for unknown tags" {
   run bash -lc '
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
     source "'"$REPO_ROOT"'/lib/manifest.sh"
     source "'"$REPO_ROOT"'/lib/core/selection.sh"
     PACKAGES_FILE="'"$FIXTURE_PACKAGES"'"

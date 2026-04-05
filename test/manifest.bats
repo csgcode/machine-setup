@@ -7,6 +7,7 @@ setup() {
   FIXTURE_PACKAGES="$REPO_ROOT/test/fixtures/packages-basic.yaml"
   FIXTURE_GROUPS="$REPO_ROOT/test/fixtures/groups-basic.yaml"
   FIXTURE_TAGS="$REPO_ROOT/manifests/tags.yaml"
+  FIXTURE_PROFILES="$REPO_ROOT/manifests/profiles.yaml"
 }
 
 @test "manifest helpers list fixture packages" {
@@ -44,6 +45,14 @@ setup() {
   run bash -lc '
     source "'"$REPO_ROOT"'/lib/manifest.sh"
     validate_manifest_schema
+  '
+  [ "$status" -eq 0 ]
+}
+
+@test "manifest helpers list repo profiles" {
+  run bash -lc '
+    source "'"$REPO_ROOT"'/lib/manifest.sh"
+    list_all_profiles
   '
   [ "$status" -eq 0 ]
 }

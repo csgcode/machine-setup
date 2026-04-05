@@ -11,6 +11,9 @@ dispatch_cli() {
     doctor)
       cmd_doctor
       ;;
+    status)
+      cmd_status
+      ;;
     install)
       cmd_install
       ;;
