@@ -16,10 +16,11 @@ cli_usage() {
   cat <<USAGE
 Usage:
   setup [menu] [--dry-run] [--yes] [--verbose]
-  setup [subcommand] --format <text|json>
+  setup [subcommand] [--format <text|json>]
   setup list
   setup doctor
   setup status
+  setup bootstrap
   setup install --package <id> [--package <id> ...] [--tag <tag> ...] [--profile <id> ...]
   setup install --group <name>    # legacy compatibility path
   setup check --package <id> [--tag <tag> ...] [--profile <id> ...]
@@ -31,6 +32,7 @@ Examples:
   setup list
   setup doctor
   setup status
+  setup bootstrap
   setup install --package oh-my-zsh
   setup install --tag shell
   setup install --profile work-laptop
@@ -137,7 +139,7 @@ parse_cli_args() {
   done
 
   case "$CLI_SUBCOMMAND" in
-    menu|list|doctor|status)
+    menu|list|doctor|status|bootstrap)
       if [[ -n "$CLI_GROUP" || "${#CLI_PACKAGES[@]}" -gt 0 || "${#CLI_TAGS[@]}" -gt 0 || "${#CLI_PROFILES[@]}" -gt 0 ]]; then
         cli_usage_error "Selectors are only supported with install, check, apply-config, and drift"
         return $?

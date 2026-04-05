@@ -7,6 +7,7 @@ Idempotent macOS machine bootstrap for development tools.
 ```bash
 ./bin/setup doctor
 ./bin/setup list
+./bin/setup bootstrap
 ./bin/setup install --group core --yes
 ./bin/setup install --group shell --yes
 ```
@@ -15,6 +16,7 @@ Idempotent macOS machine bootstrap for development tools.
 
 - Interactive menu by default (`./bin/setup`)
 - Group and single-package installs
+- Explicit `chezmoi` bootstrap command
 - Declarative package/group manifests (YAML)
 - Dry-run mode
 - JSON output for reporting commands

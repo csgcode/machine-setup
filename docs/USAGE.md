@@ -35,6 +35,13 @@ The default flow is a guided prompt sequence:
 `list`, `doctor`, `status`, and `drift` also support `--format json` for
 machine-readable output.
 
+## Bootstrap chezmoi
+
+```bash
+./bin/setup bootstrap
+./bin/setup bootstrap --format json
+```
+
 ## Install one group
 
 Legacy compatibility path during migration:

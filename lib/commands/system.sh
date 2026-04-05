@@ -73,3 +73,66 @@ cmd_doctor() {
 
   log_info "Doctor checks passed"
 }
+
+cmd_bootstrap() {
+  local was_installed=0
+  local was_initialized=0
+  local repo_url=""
+  local actions=()
+  local now_installed=0
+  local now_initialized=0
+
+  if chezmoi_is_installed; then
+    was_installed=1
+  fi
+
+  if chezmoi_is_initialized; then
+    was_initialized=1
+  fi
+
+  if [[ "$was_installed" -eq 0 ]]; then
+    actions+=("\"install\"")
+  fi
+
+  if [[ "$was_initialized" -eq 0 ]]; then
+    repo_url="$(chezmoi_resolve_repo_url)" || return 1
+    actions+=("\"init\"")
+  fi
+
+  if output_is_json; then
+    chezmoi_ensure_ready "$repo_url" >/dev/null || return 1
+  else
+    chezmoi_ensure_ready "$repo_url" || return 1
+  fi
+
+  if chezmoi_is_installed; then
+    now_installed=1
+  fi
+
+  if chezmoi_is_initialized; then
+    now_initialized=1
+  fi
+
+  if output_is_json; then
+    printf '{\n'
+    printf '  "ready": %s,\n' "$(output_json_bool "$(( now_installed == 1 && now_initialized == 1 ? 1 : 0 ))")"
+    printf '  "dry_run": %s,\n' "$(output_json_bool "$SETUP_DRY_RUN")"
+    printf '  "before": {"installed": %s, "initialized": %s},\n' \
+      "$(output_json_bool "$was_installed")" \
+      "$(output_json_bool "$was_initialized")"
+    printf '  "after": {"installed": %s, "initialized": %s},\n' \
+      "$(output_json_bool "$now_installed")" \
+      "$(output_json_bool "$now_initialized")"
+    printf '  "planned_actions": %s\n' "$(output_json_array "${actions[@]}")"
+    printf '}\n'
+    return 0
+  fi
+
+  if [[ "${#actions[@]}" -eq 0 ]]; then
+    printf 'Chezmoi is already ready.\n'
+    return 0
+  fi
+
+  printf 'Chezmoi bootstrap complete.\n'
+  printf 'Planned or completed actions: %s\n' "${actions[*]//\"/}"
+}

@@ -11,6 +11,9 @@ dispatch_cli() {
     doctor)
       cmd_doctor
       ;;
+    bootstrap)
+      cmd_bootstrap
+      ;;
     status)
       cmd_status
       ;;

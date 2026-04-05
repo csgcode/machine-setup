@@ -225,3 +225,58 @@ EOF
   [[ "$output" == *"[DRY-RUN] chezmoi init --apply=false https://example.com/dotfiles.git"* ]]
   [[ "$output" == *"[DRY-RUN] chezmoi apply shell-base alpha"* ]]
 }
+
+@test "bootstrap command prepares chezmoi from repo url" {
+  run env \
+    HOME="$TEST_HOME" \
+    PATH="$TEST_BIN:/usr/bin:/bin" \
+    CHEZMOI_LOG="$CHEZMOI_LOG" \
+    CHEZMOI_INSTALLED_FILE="$CHEZMOI_INSTALLED_FILE" \
+    CHEZMOI_INITIALIZED_FILE="$CHEZMOI_INITIALIZED_FILE" \
+    CHEZMOI_TEMPLATE="$CHEZMOI_TEMPLATE" \
+    TEST_BIN="$TEST_BIN" \
+    CHEZMOI_REPO_URL="https://example.com/dotfiles.git" \
+    "$REPO_ROOT/bin/setup" bootstrap
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Installing chezmoi"* ]]
+  [[ "$output" == *"Initializing chezmoi"* ]]
+  [[ "$output" == *"Chezmoi bootstrap complete."* ]]
+  run cat "$CHEZMOI_LOG"
+  [[ "$output" == *$'brew list --formula chezmoi\nbrew install chezmoi\nchezmoi source-path\nchezmoi source-path\nchezmoi init --apply=false https://example.com/dotfiles.git'* ]]
+}
+
+@test "bootstrap command fails cleanly without repo url in non-interactive mode" {
+  cp "$CHEZMOI_TEMPLATE" "$TEST_BIN/chezmoi"
+  chmod +x "$TEST_BIN/chezmoi"
+
+  run env \
+    HOME="$TEST_HOME" \
+    PATH="$TEST_BIN:/usr/bin:/bin" \
+    SETUP_YES=1 \
+    CHEZMOI_LOG="$CHEZMOI_LOG" \
+    CHEZMOI_INITIALIZED_FILE="$CHEZMOI_INITIALIZED_FILE" \
+    "$REPO_ROOT/bin/setup" bootstrap
+
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"Missing chezmoi.repo_url configuration"* ]]
+}
+
+@test "bootstrap command dry-run previews install and init without mutation" {
+  run env \
+    HOME="$TEST_HOME" \
+    PATH="$TEST_BIN:/usr/bin:/bin" \
+    CHEZMOI_LOG="$CHEZMOI_LOG" \
+    CHEZMOI_INSTALLED_FILE="$CHEZMOI_INSTALLED_FILE" \
+    CHEZMOI_INITIALIZED_FILE="$CHEZMOI_INITIALIZED_FILE" \
+    CHEZMOI_TEMPLATE="$CHEZMOI_TEMPLATE" \
+    TEST_BIN="$TEST_BIN" \
+    CHEZMOI_REPO_URL="https://example.com/dotfiles.git" \
+    "$REPO_ROOT/bin/setup" bootstrap --dry-run --format json
+
+  [ "$status" -eq 0 ]
+  [[ ! -f "$CHEZMOI_INSTALLED_FILE" ]]
+  [[ ! -f "$CHEZMOI_INITIALIZED_FILE" ]]
+  run ruby -rjson -e 'data=JSON.parse(ARGF.read); abort unless data["dry_run"] == true; abort unless data["ready"] == false; abort unless data["planned_actions"] == ["install", "init"]' <<<"$output"
+  [ "$status" -eq 0 ]
+}

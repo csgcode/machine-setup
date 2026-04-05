@@ -31,3 +31,11 @@ output_json_array() {
 
   printf '[%s]' "$joined"
 }
+
+output_json_bool() {
+  if [[ "${1:-0}" -eq 1 ]]; then
+    printf 'true'
+  else
+    printf 'false'
+  fi
+}

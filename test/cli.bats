@@ -72,6 +72,12 @@ setup() {
   [[ "$output" == *"setup status"* ]]
 }
 
+@test "bootstrap is included in help output" {
+  run "$REPO_ROOT/bin/setup" --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"setup bootstrap"* ]]
+}
+
 @test "drift requires a selector" {
   run "$REPO_ROOT/bin/setup" drift
   [ "$status" -eq 2 ]
