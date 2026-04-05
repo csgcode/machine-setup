@@ -23,3 +23,17 @@ Idempotent macOS machine bootstrap for development tools.
 - Configuration is being migrated to `chezmoi`
 
 See `docs/USAGE.md` for full command examples.
+
+## Validation
+
+Run the local validation suite with:
+
+```bash
+./scripts/validate.sh
+```
+
+If `shellcheck` is not installed locally, you can still run the rest with:
+
+```bash
+./scripts/validate.sh --skip-shellcheck
+```

@@ -106,3 +106,10 @@ intended to be managed through `chezmoi`.
 ./bin/setup apply-config --tag shell --dry-run
 ./bin/setup install --group shell --dry-run --yes
 ```
+
+## Validation
+
+```bash
+./scripts/validate.sh
+./scripts/validate.sh --skip-shellcheck
+```

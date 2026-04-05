@@ -6,6 +6,7 @@ Run locally:
 
 ```bash
 bats test
+./scripts/validate.sh
 ```
 
 Current phase-0 coverage focuses on:

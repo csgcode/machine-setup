@@ -48,7 +48,8 @@ Current progress:
 - completed: `P3.1`
 - completed: `P4.1`
 - completed: `P4.2`
-- in_progress: `P4.3`
+- completed: `P4.3`
+- in_progress: `P4.4`
 
 ## Phase 4: Operational Polish
 
