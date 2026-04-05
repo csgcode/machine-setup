@@ -27,13 +27,19 @@ setup() {
 @test "install rejects mixing group and package selectors" {
   run "$REPO_ROOT/bin/setup" install --group core --package bash
   [ "$status" -eq 2 ]
-  [[ "$output" == *"Use either --group or package/tag selectors, not both"* ]]
+  [[ "$output" == *"Use either --group or package/tag/profile selectors, not both"* ]]
 }
 
 @test "missing tag value is a usage error" {
   run "$REPO_ROOT/bin/setup" install --tag
   [ "$status" -eq 2 ]
   [[ "$output" == *"Missing value for --tag"* ]]
+}
+
+@test "missing profile value is a usage error" {
+  run "$REPO_ROOT/bin/setup" install --profile
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"Missing value for --profile"* ]]
 }
 
 @test "group selector is rejected for apply-config" {
@@ -57,5 +63,5 @@ setup() {
 @test "drift requires a selector" {
   run "$REPO_ROOT/bin/setup" drift
   [ "$status" -eq 2 ]
-  [[ "$output" == *"drift requires --package or --tag"* ]]
+  [[ "$output" == *"drift requires --package, --tag, or --profile"* ]]
 }

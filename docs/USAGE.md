@@ -9,7 +9,7 @@
 The default flow is a guided prompt sequence:
 
 - choose `install`, `check`, or `apply-config`
-- choose packages or tags
+- choose packages, tags, or profiles
 - review the resolved package set before execution
 - optionally save the selection into local machine state after install/config
 
@@ -54,11 +54,18 @@ Legacy compatibility path during migration:
 ./bin/setup install --package oh-my-zsh --tag shell
 ```
 
+## Install by profile
+
+```bash
+./bin/setup install --profile work-laptop
+```
+
 ## Check selected packages
 
 ```bash
 ./bin/setup check --package oh-my-zsh
 ./bin/setup check --tag shell
+./bin/setup check --profile work-laptop
 ```
 
 ## Apply config for selected packages
@@ -66,6 +73,7 @@ Legacy compatibility path during migration:
 ```bash
 ./bin/setup apply-config --package oh-my-zsh
 ./bin/setup apply-config --tag shell
+./bin/setup apply-config --profile work-laptop
 ```
 
 ## Report config drift for selected packages
@@ -73,6 +81,7 @@ Legacy compatibility path during migration:
 ```bash
 ./bin/setup drift --package oh-my-zsh
 ./bin/setup drift --tag shell
+./bin/setup drift --profile work-laptop
 ```
 
 Shell configuration is no longer copied into `$HOME` by this repo. Dotfiles are

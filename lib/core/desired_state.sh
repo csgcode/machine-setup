@@ -1,30 +1,5 @@
 #!/usr/bin/env bash
 
-desired_state_selection_args_from_profile() {
-  local profile_id="$1"
-  local pkg=""
-  local tag=""
-
-  if [[ -z "$profile_id" ]]; then
-    return 0
-  fi
-
-  if ! profile_exists "$profile_id"; then
-    log_error "Unknown profile: $profile_id"
-    return 1
-  fi
-
-  while IFS= read -r pkg; do
-    [[ -z "$pkg" ]] && continue
-    printf '%s\n%s\n' "--package" "$pkg"
-  done < <(profile_packages "$profile_id")
-
-  while IFS= read -r tag; do
-    [[ -z "$tag" ]] && continue
-    printf '%s\n%s\n' "--tag" "$tag"
-  done < <(profile_tags "$profile_id")
-}
-
 desired_state_direct_selection_args() {
   local profile_id=""
   local profile_args=()
@@ -32,7 +7,7 @@ desired_state_direct_selection_args() {
   local tag=""
 
   profile_id="$(state_get_selected_profile | head -n1)"
-  read_lines_into_array profile_args desired_state_selection_args_from_profile "$profile_id" || return 1
+  read_lines_into_array profile_args selection_direct_inputs_from_profile "$profile_id" || return 1
   if [[ "${#profile_args[@]}" -gt 0 ]]; then
     printf '%s\n' "${profile_args[@]}"
   fi

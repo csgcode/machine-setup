@@ -10,6 +10,7 @@ setup() {
   FIXTURE_PACKAGES="$REPO_ROOT/test/fixtures/packages-basic.yaml"
   FIXTURE_TAGS="$REPO_ROOT/test/fixtures/tags-basic.yaml"
   FIXTURE_GROUPS="$REPO_ROOT/test/fixtures/groups-basic.yaml"
+  FIXTURE_PROFILES="$REPO_ROOT/test/fixtures/profiles-basic.yaml"
   TEST_CONFIG="$BATS_TEST_TMPDIR/config.yaml"
 
   mkdir -p "$TEST_HOME" "$TEST_BIN"
@@ -58,6 +59,7 @@ EOF
     PACKAGES_FILE="$FIXTURE_PACKAGES" \
     TAGS_FILE="$FIXTURE_TAGS" \
     GROUPS_FILE="$FIXTURE_GROUPS" \
+    PROFILES_FILE="$FIXTURE_PROFILES" \
     MACHINE_SETUP_CONFIG_PATH="$TEST_CONFIG" \
     CHEZMOI_REPO_URL="https://example.com/dotfiles.git" \
     "$REPO_ROOT/bin/setup" install --package alpha
@@ -79,6 +81,7 @@ EOF
     PACKAGES_FILE="$FIXTURE_PACKAGES" \
     TAGS_FILE="$FIXTURE_TAGS" \
     GROUPS_FILE="$FIXTURE_GROUPS" \
+    PROFILES_FILE="$FIXTURE_PROFILES" \
     "$REPO_ROOT/bin/setup" check --tag test
 
   [ "$status" -eq 1 ]
@@ -94,6 +97,7 @@ EOF
     PACKAGES_FILE="$FIXTURE_PACKAGES" \
     TAGS_FILE="$FIXTURE_TAGS" \
     GROUPS_FILE="$FIXTURE_GROUPS" \
+    PROFILES_FILE="$FIXTURE_PROFILES" \
     MACHINE_SETUP_CONFIG_PATH="$TEST_CONFIG" \
     CHEZMOI_REPO_URL="https://example.com/dotfiles.git" \
     "$REPO_ROOT/bin/setup" apply-config --package alpha
@@ -104,4 +108,24 @@ EOF
   [[ "$output" != *"brew install alpha"* ]]
   [[ "$output" != *"brew install beta"* ]]
   [[ "$output" == *'chezmoi apply shell-base alpha-config'* ]]
+}
+
+@test "install --profile resolves through the shared backend" {
+  run env \
+    HOME="$TEST_HOME" \
+    PATH="$TEST_BIN:/usr/bin:/bin" \
+    TEST_LOG="$TEST_LOG" \
+    PACKAGES_FILE="$FIXTURE_PACKAGES" \
+    TAGS_FILE="$FIXTURE_TAGS" \
+    GROUPS_FILE="$FIXTURE_GROUPS" \
+    PROFILES_FILE="$FIXTURE_PROFILES" \
+    MACHINE_SETUP_CONFIG_PATH="$TEST_CONFIG" \
+    CHEZMOI_REPO_URL="https://example.com/dotfiles.git" \
+    "$REPO_ROOT/bin/setup" install --profile starter
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Installing: beta"* ]]
+  [[ "$output" == *"Installing: alpha"* ]]
+  run cat "$TEST_LOG"
+  [[ "$output" == *$'brew list --formula beta\nbrew install beta\nbrew list --formula alpha\nbrew install alpha'* ]]
 }

@@ -1,0 +1,7 @@
+schema_version: 1
+
+profiles:
+  - id: starter
+    packages:
+      - alpha
+    tags: []

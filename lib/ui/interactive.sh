@@ -4,12 +4,14 @@ INTERACTIVE_ACTION=""
 INTERACTIVE_SELECTION_MODE=""
 INTERACTIVE_SELECTED_PACKAGES=()
 INTERACTIVE_SELECTED_TAGS=()
+INTERACTIVE_SELECTED_PROFILES=()
 
 interactive_reset_state() {
   INTERACTIVE_ACTION=""
   INTERACTIVE_SELECTION_MODE=""
   INTERACTIVE_SELECTED_PACKAGES=()
   INTERACTIVE_SELECTED_TAGS=()
+  INTERACTIVE_SELECTED_PROFILES=()
 }
 
 interactive_prompt() {
@@ -54,14 +56,16 @@ interactive_choose_selection_mode() {
   printf 'Select how to choose software:\n'
   printf '  1) Individual packages\n'
   printf '  2) Tags\n'
-  printf '  3) Cancel\n'
+  printf '  3) Profiles\n'
+  printf '  4) Cancel\n'
 
-  choice="$(interactive_prompt "Choose an option [1-3]: ")" || return 1
+  choice="$(interactive_prompt "Choose an option [1-4]: ")" || return 1
 
   case "$choice" in
     1) INTERACTIVE_SELECTION_MODE="package" ;;
     2) INTERACTIVE_SELECTION_MODE="tag" ;;
-    3) INTERACTIVE_SELECTION_MODE="cancel" ;;
+    3) INTERACTIVE_SELECTION_MODE="profile" ;;
+    4) INTERACTIVE_SELECTION_MODE="cancel" ;;
     *)
       log_error "Invalid selection mode"
       return 1
@@ -118,9 +122,15 @@ interactive_select_values() {
   if [[ "$kind" == "package" ]]; then
     INTERACTIVE_SELECTED_PACKAGES=("${selected[@]}")
     INTERACTIVE_SELECTED_TAGS=()
-  else
+    INTERACTIVE_SELECTED_PROFILES=()
+  elif [[ "$kind" == "tag" ]]; then
     INTERACTIVE_SELECTED_PACKAGES=()
     INTERACTIVE_SELECTED_TAGS=("${selected[@]}")
+    INTERACTIVE_SELECTED_PROFILES=()
+  else
+    INTERACTIVE_SELECTED_PACKAGES=()
+    INTERACTIVE_SELECTED_TAGS=()
+    INTERACTIVE_SELECTED_PROFILES=("${selected[@]}")
   fi
 }
 
@@ -144,9 +154,21 @@ interactive_select_tags() {
   interactive_select_values "tag" "${tags[@]}"
 }
 
+interactive_select_profiles() {
+  local profiles=()
+  local profile=""
+  while IFS= read -r profile; do
+    [[ -z "$profile" ]] && continue
+    profiles+=("$profile")
+  done < <(list_all_profiles)
+
+  interactive_select_values "profile" "${profiles[@]}"
+}
+
 interactive_selection_args() {
   local pkg
   local tag
+  local profile
 
   for pkg in "${INTERACTIVE_SELECTED_PACKAGES[@]+"${INTERACTIVE_SELECTED_PACKAGES[@]}"}"; do
     printf '%s\n%s\n' "--package" "$pkg"
@@ -154,6 +176,10 @@ interactive_selection_args() {
 
   for tag in "${INTERACTIVE_SELECTED_TAGS[@]+"${INTERACTIVE_SELECTED_TAGS[@]}"}"; do
     printf '%s\n%s\n' "--tag" "$tag"
+  done
+
+  for profile in "${INTERACTIVE_SELECTED_PROFILES[@]+"${INTERACTIVE_SELECTED_PROFILES[@]}"}"; do
+    printf '%s\n%s\n' "--profile" "$profile"
   done
 }
 
@@ -193,12 +219,16 @@ interactive_maybe_save_selection() {
   local args=()
   local pkg
   local tag
+  local profile
 
   for pkg in "${INTERACTIVE_SELECTED_PACKAGES[@]+"${INTERACTIVE_SELECTED_PACKAGES[@]}"}"; do
     args+=("--include-package" "$pkg")
   done
   for tag in "${INTERACTIVE_SELECTED_TAGS[@]+"${INTERACTIVE_SELECTED_TAGS[@]}"}"; do
     args+=("--include-tag" "$tag")
+  done
+  for profile in "${INTERACTIVE_SELECTED_PROFILES[@]+"${INTERACTIVE_SELECTED_PROFILES[@]}"}"; do
+    args+=("--profile" "$profile")
   done
 
   state_write_machine_state "${args[@]}"
@@ -209,6 +239,7 @@ interactive_apply_selection_to_cli() {
   CLI_GROUP=""
   CLI_PACKAGES=("${INTERACTIVE_SELECTED_PACKAGES[@]+"${INTERACTIVE_SELECTED_PACKAGES[@]}"}")
   CLI_TAGS=("${INTERACTIVE_SELECTED_TAGS[@]+"${INTERACTIVE_SELECTED_TAGS[@]}"}")
+  CLI_PROFILES=("${INTERACTIVE_SELECTED_PROFILES[@]+"${INTERACTIVE_SELECTED_PROFILES[@]}"}")
 }
 
 cmd_interactive() {
@@ -231,6 +262,9 @@ cmd_interactive() {
       ;;
     tag)
       interactive_select_tags || return 1
+      ;;
+    profile)
+      interactive_select_profiles || return 1
       ;;
   esac
 

@@ -181,6 +181,31 @@ selection_resolve_inputs() {
   fi
 }
 
+selection_direct_inputs_from_profile() {
+  local profile_id="$1"
+  local pkg=""
+  local tag=""
+
+  if [[ -z "$profile_id" ]]; then
+    return 0
+  fi
+
+  if ! profile_exists "$profile_id"; then
+    log_error "Unknown profile: $profile_id"
+    return 1
+  fi
+
+  while IFS= read -r pkg; do
+    [[ -z "$pkg" ]] && continue
+    printf '%s\n%s\n' "--package" "$pkg"
+  done < <(profile_packages "$profile_id")
+
+  while IFS= read -r tag; do
+    [[ -z "$tag" ]] && continue
+    printf '%s\n%s\n' "--tag" "$tag"
+  done < <(profile_tags "$profile_id")
+}
+
 selection_resolve_direct_inputs() {
   validate_manifest_schema || return 1
   selection_reset_state
@@ -188,6 +213,8 @@ selection_resolve_direct_inputs() {
   local mode=""
   local value=""
   local pkg=""
+  local profile_args=()
+  local profile_resolved=()
 
   while [[ $# -gt 0 ]]; do
     mode="$1"
@@ -223,6 +250,23 @@ selection_resolve_direct_inputs() {
             SELECTION_RESULT+=("$pkg")
           fi
         done < <(tag_packages "$value")
+        shift 2
+        ;;
+      --profile)
+        if [[ -z "$value" ]]; then
+          log_error "Missing value for --profile"
+          return 1
+        fi
+        read_lines_into_array profile_args selection_direct_inputs_from_profile "$value" || return 1
+        if [[ "${#profile_args[@]}" -gt 0 ]]; then
+          read_lines_into_array profile_resolved selection_resolve_direct_inputs "${profile_args[@]}" || return 1
+          for pkg in "${profile_resolved[@]+"${profile_resolved[@]}"}"; do
+            [[ -z "$pkg" ]] && continue
+            if ! selection_array_contains "$pkg" "${SELECTION_RESULT[@]+"${SELECTION_RESULT[@]}"}"; then
+              SELECTION_RESULT+=("$pkg")
+            fi
+          done
+        fi
         shift 2
         ;;
       *)

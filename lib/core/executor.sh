@@ -5,6 +5,7 @@ executor_selection_args() {
   local index
   local pkg
   local tag
+  local profile
 
   for index in "${!CLI_PACKAGES[@]}"; do
     pkg="${CLI_PACKAGES[$index]}"
@@ -14,6 +15,11 @@ executor_selection_args() {
   for index in "${!CLI_TAGS[@]}"; do
     tag="${CLI_TAGS[$index]}"
     args+=("--tag" "$tag")
+  done
+
+  for index in "${!CLI_PROFILES[@]}"; do
+    profile="${CLI_PROFILES[$index]}"
+    args+=("--profile" "$profile")
   done
 
   printf '%s\n' "${args[@]}"

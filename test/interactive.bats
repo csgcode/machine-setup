@@ -11,6 +11,7 @@ setup() {
   FIXTURE_PACKAGES="$REPO_ROOT/test/fixtures/packages-basic.yaml"
   FIXTURE_TAGS="$REPO_ROOT/test/fixtures/tags-basic.yaml"
   FIXTURE_GROUPS="$REPO_ROOT/test/fixtures/groups-basic.yaml"
+  FIXTURE_PROFILES="$REPO_ROOT/test/fixtures/profiles-basic.yaml"
   TEST_CONFIG="$BATS_TEST_TMPDIR/config.yaml"
 
   mkdir -p "$TEST_HOME" "$TEST_BIN"
@@ -59,6 +60,7 @@ EOF
       PACKAGES_FILE="'"$FIXTURE_PACKAGES"'" \
       TAGS_FILE="'"$FIXTURE_TAGS"'" \
       GROUPS_FILE="'"$FIXTURE_GROUPS"'" \
+      PROFILES_FILE="'"$FIXTURE_PROFILES"'" \
       MACHINE_SETUP_CONFIG_PATH="'"$TEST_CONFIG"'" \
       MACHINE_SETUP_STATE_PATH="'"$TEST_STATE"'" \
       CHEZMOI_REPO_URL="https://example.com/dotfiles.git" \
@@ -87,6 +89,7 @@ EOF
       PACKAGES_FILE="'"$FIXTURE_PACKAGES"'" \
       TAGS_FILE="'"$FIXTURE_TAGS"'" \
       GROUPS_FILE="'"$FIXTURE_GROUPS"'" \
+      PROFILES_FILE="'"$FIXTURE_PROFILES"'" \
       "'"$REPO_ROOT"'/bin/setup"
   '
   [ "$status" -eq 1 ]
@@ -103,10 +106,34 @@ EOF
       PACKAGES_FILE="'"$FIXTURE_PACKAGES"'" \
       TAGS_FILE="'"$FIXTURE_TAGS"'" \
       GROUPS_FILE="'"$FIXTURE_GROUPS"'" \
+      PROFILES_FILE="'"$FIXTURE_PROFILES"'" \
       "'"$REPO_ROOT"'/bin/setup"
   '
   [ "$status" -eq 0 ]
   [[ "$output" == *"Aborted before execution"* ]]
   run cat "$TEST_LOG"
   [ -z "$output" ]
+}
+
+@test "interactive profile install flow resolves through the shared backend" {
+  run bash -c '
+    printf "1\n3\n1\ny\ny\n" | env \
+      HOME="'"$TEST_HOME"'" \
+      PATH="'"$TEST_BIN"':/usr/bin:/bin" \
+      TEST_LOG="'"$TEST_LOG"'" \
+      PACKAGES_FILE="'"$FIXTURE_PACKAGES"'" \
+      TAGS_FILE="'"$FIXTURE_TAGS"'" \
+      GROUPS_FILE="'"$FIXTURE_GROUPS"'" \
+      PROFILES_FILE="'"$FIXTURE_PROFILES"'" \
+      MACHINE_SETUP_CONFIG_PATH="'"$TEST_CONFIG"'" \
+      MACHINE_SETUP_STATE_PATH="'"$TEST_STATE"'" \
+      CHEZMOI_REPO_URL="https://example.com/dotfiles.git" \
+      "'"$REPO_ROOT"'/bin/setup"
+  '
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Resolved packages:"* ]]
+  [[ "$output" == *"  - beta"* ]]
+  [[ "$output" == *"  - alpha"* ]]
+  run cat "$TEST_STATE"
+  [[ "$output" == *"profile: starter"* ]]
 }

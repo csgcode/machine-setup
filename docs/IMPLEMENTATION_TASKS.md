@@ -45,7 +45,7 @@ Current progress:
 - completed: `P1.1` through `P1.7`
 - completed: `P2.1`
 - completed: `P2.2`
-- pending: `P3.1` onward
+- completed: `P3.1`
 
 ## Phase 0: Stabilize Current Repository
 

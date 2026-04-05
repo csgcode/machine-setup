@@ -10,7 +10,7 @@ reporting_selection_args_or_error() {
 
   read_lines_into_array selection_args executor_selection_args
   if [[ "${#selection_args[@]}" -eq 0 ]]; then
-    log_error "drift requires --package or --tag"
+    log_error "drift requires --package, --tag, or --profile"
     return 2
   fi
 

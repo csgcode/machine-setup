@@ -4,8 +4,8 @@ cmd_install() {
   local selection_args=()
   local plan=()
 
-  if [[ -n "$CLI_GROUP" ]] && [[ "${#CLI_PACKAGES[@]}" -gt 0 || "${#CLI_TAGS[@]}" -gt 0 ]]; then
-    log_error "Use either --group or package/tag selectors, not both"
+  if [[ -n "$CLI_GROUP" ]] && [[ "${#CLI_PACKAGES[@]}" -gt 0 || "${#CLI_TAGS[@]}" -gt 0 || "${#CLI_PROFILES[@]}" -gt 0 ]]; then
+    log_error "Use either --group or package/tag/profile selectors, not both"
     return 2
   fi
 
@@ -17,7 +17,7 @@ cmd_install() {
 
   read_lines_into_array selection_args executor_selection_args
   if [[ "${#selection_args[@]}" -eq 0 ]]; then
-    log_error "install requires --package, --tag, or --group"
+    log_error "install requires --package, --tag, --profile, or --group"
     return 2
   fi
 
@@ -42,7 +42,7 @@ cmd_check() {
 
   read_lines_into_array selection_args executor_selection_args
   if [[ "${#selection_args[@]}" -eq 0 ]]; then
-    log_error "check requires --package or --tag"
+    log_error "check requires --package, --tag, or --profile"
     return 2
   fi
 
@@ -72,7 +72,7 @@ cmd_apply_config() {
 
   read_lines_into_array selection_args executor_selection_args
   if [[ "${#selection_args[@]}" -eq 0 ]]; then
-    log_error "apply-config requires --package or --tag"
+    log_error "apply-config requires --package, --tag, or --profile"
     return 2
   fi
 

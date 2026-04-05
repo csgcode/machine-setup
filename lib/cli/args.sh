@@ -4,6 +4,7 @@ CLI_SUBCOMMAND="menu"
 CLI_GROUP=""
 CLI_PACKAGES=()
 CLI_TAGS=()
+CLI_PROFILES=()
 CLI_SHOW_HELP=0
 
 CLI_EXIT_OK=0
@@ -17,11 +18,11 @@ Usage:
   setup list
   setup doctor
   setup status
-  setup install --package <id> [--package <id> ...] [--tag <tag> ...]
+  setup install --package <id> [--package <id> ...] [--tag <tag> ...] [--profile <id> ...]
   setup install --group <name>    # legacy compatibility path
-  setup check --package <id> [--tag <tag> ...]
-  setup apply-config --package <id> [--tag <tag> ...]
-  setup drift --package <id> [--tag <tag> ...]
+  setup check --package <id> [--tag <tag> ...] [--profile <id> ...]
+  setup apply-config --package <id> [--tag <tag> ...] [--profile <id> ...]
+  setup drift --package <id> [--tag <tag> ...] [--profile <id> ...]
 
 Examples:
   setup
@@ -30,6 +31,7 @@ Examples:
   setup status
   setup install --package oh-my-zsh
   setup install --tag shell
+  setup install --profile work-laptop
   setup check --package oh-my-zsh
   setup apply-config --tag shell
   setup drift --tag shell
@@ -48,6 +50,7 @@ parse_cli_args() {
   CLI_GROUP=""
   CLI_PACKAGES=()
   CLI_TAGS=()
+  CLI_PROFILES=()
   CLI_SHOW_HELP=0
 
   if [[ $# -gt 0 ]] && [[ "$1" != --* ]]; then
@@ -81,6 +84,14 @@ parse_cli_args() {
         CLI_TAGS+=("$2")
         shift 2
         ;;
+      --profile)
+        if [[ $# -lt 2 || "$2" == --* ]]; then
+          cli_usage_error "Missing value for --profile"
+          return $?
+        fi
+        CLI_PROFILES+=("$2")
+        shift 2
+        ;;
       --dry-run)
         SETUP_DRY_RUN=1
         shift
@@ -107,7 +118,7 @@ parse_cli_args() {
 
   case "$CLI_SUBCOMMAND" in
     menu|list|doctor|status)
-      if [[ -n "$CLI_GROUP" || "${#CLI_PACKAGES[@]}" -gt 0 || "${#CLI_TAGS[@]}" -gt 0 ]]; then
+      if [[ -n "$CLI_GROUP" || "${#CLI_PACKAGES[@]}" -gt 0 || "${#CLI_TAGS[@]}" -gt 0 || "${#CLI_PROFILES[@]}" -gt 0 ]]; then
         cli_usage_error "Selectors are only supported with install, check, apply-config, and drift"
         return $?
       fi

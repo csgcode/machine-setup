@@ -1,14 +1,16 @@
 # Decisions
 
 - Interface: interactive-first CLI with package/tag subcommands for automation.
+- Interface: interactive-first CLI with package/tag/profile subcommands for
+  automation.
 - Interactive UX: the default entrypoint uses a guided prompt flow backed by
-  the same package/tag command handlers as direct CLI invocations.
+  the same package/tag/profile command handlers as direct CLI invocations.
 - Data model: declarative YAML manifests for groups and packages.
 - Idempotency: every package has a `check` command before install.
 - Scope v1: `core` and `shell` groups only.
 - Migration: preserve `./bin/setup`, but treat group-based install flows as
   legacy compatibility behavior during the redesign.
-- Command model: `install`, `check`, and `apply-config` on package/tag
+- Command model: `install`, `check`, and `apply-config` on package/tag/profile
   selections are the primary direct interface, with `drift` for non-destructive
   config status reporting and `status` for desired-state reporting.
 - Dotfiles: this repo should not copy dotfiles into `$HOME`; configuration is
