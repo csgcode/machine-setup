@@ -49,6 +49,15 @@ setup() {
   [ "$status" -eq 0 ]
 }
 
+@test "manifest helpers expose font package shell component target" {
+  run bash -lc '
+    source "'"$REPO_ROOT"'/lib/manifest.sh"
+    package_install_target font-hack
+  '
+  [ "$status" -eq 0 ]
+  [ "$output" = 'font-hack' ]
+}
+
 @test "manifest helpers list repo profiles" {
   run bash -lc '
     source "'"$REPO_ROOT"'/lib/manifest.sh"

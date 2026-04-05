@@ -21,3 +21,5 @@ groups:
       - zsh-autosuggestions-plugin
       - zsh-z
       - fzf-extra
+      - font-hack
+      - font-jetbrains-mono

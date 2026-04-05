@@ -128,9 +128,34 @@ Then validate both install and config flow:
 
 For `shell_component`, you must also add or update the handler in:
 
-- [install.sh](/Users/gokul/Dev/machine-setup/lib/compat/install.sh)
+- [shell.sh](/Users/gokul/Dev/machine-setup/lib/installers/shell.sh)
+
+The convention is:
+
+- `installer.package: font-hack`
+- installer function: `install_font_hack`
 
 Do not add logic that copies dotfiles into `$HOME`. Config belongs in `chezmoi`.
+
+Example:
+
+```yaml
+  - id: font-hack
+    name: Hack font
+    group: shell
+    platform:
+      - macos
+    tags:
+      - shell
+      - terminal
+      - fonts
+    installer:
+      kind: shell_component
+      package: font-hack
+    check:
+      command: test -f "$HOME/Library/Fonts/Hack-Regular.ttf" || test -f "/Library/Fonts/Hack-Regular.ttf"
+    depends_on: []
+```
 
 ## 2. Remove A Managed Application Or Package
 

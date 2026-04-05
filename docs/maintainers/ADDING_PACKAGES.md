@@ -20,7 +20,9 @@ For the full operator guide, see [WORKFLOWS.md](/Users/gokul/Dev/machine-setup/d
 3. Add the package `id` to the relevant group in `manifests/groups.yaml` while
    legacy group compatibility remains in place.
 
-4. For `shell_component`, add a case handler in `lib/compat/install.sh`.
+4. For `shell_component`, add an `install_<component>` function in
+   `lib/installers/shell.sh`. The function name is derived from
+   `installer.package` by replacing `-` with `_`.
    Do not add handlers that copy dotfiles into `$HOME`; config should be handled
    through `chezmoi`.
 

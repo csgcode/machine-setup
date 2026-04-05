@@ -10,6 +10,9 @@ tags:
   - id: core
     description: Core development bootstrap packages.
 
+  - id: fonts
+    description: Fonts required by terminal and editor tooling.
+
   - id: git
     description: Git and source-control related tooling.
 

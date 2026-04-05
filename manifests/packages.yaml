@@ -256,3 +256,35 @@ packages:
       command: test -f "$HOME/.fzf.zsh"
     depends_on:
       - fzf
+
+  - id: font-hack
+    name: Hack font
+    group: shell
+    platform:
+      - macos
+    tags:
+      - shell
+      - terminal
+      - fonts
+    installer:
+      kind: shell_component
+      package: font-hack
+    check:
+      command: test -f "$HOME/Library/Fonts/Hack-Regular.ttf" || test -f "/Library/Fonts/Hack-Regular.ttf"
+    depends_on: []
+
+  - id: font-jetbrains-mono
+    name: JetBrains Mono font
+    group: shell
+    platform:
+      - macos
+    tags:
+      - shell
+      - terminal
+      - fonts
+    installer:
+      kind: shell_component
+      package: font-jetbrains-mono
+    check:
+      command: test -f "$HOME/Library/Fonts/JetBrainsMono-Regular.ttf" || test -f "/Library/Fonts/JetBrainsMono-Regular.ttf"
+    depends_on: []

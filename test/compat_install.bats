@@ -19,6 +19,9 @@ setup() {
 @test "compat install suppresses duplicate dependency execution" {
   run bash -lc '
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
+    source "'"$REPO_ROOT"'/lib/installers/brew.sh"
+    source "'"$REPO_ROOT"'/lib/installers/shell.sh"
     source "'"$REPO_ROOT"'/lib/compat/install.sh"
 
     package_exists() { return 0; }
@@ -35,9 +38,6 @@ setup() {
     package_field() { printf "%s\n" ; }
     brew_install_formula() { :; }
     brew_install_cask() { :; }
-    install_oh_my_zsh() { :; }
-    install_zsh_plugin() { :; }
-    install_fzf_extras() { :; }
 
     compat_reset_install_state
     compat_install_package root
@@ -49,6 +49,9 @@ setup() {
 @test "compat install reports readable circular dependency paths" {
   run bash -lc '
     source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
+    source "'"$REPO_ROOT"'/lib/installers/brew.sh"
+    source "'"$REPO_ROOT"'/lib/installers/shell.sh"
     source "'"$REPO_ROOT"'/lib/compat/install.sh"
 
     package_exists() { return 0; }
@@ -65,13 +68,40 @@ setup() {
     package_field() { printf "%s\n" ; }
     brew_install_formula() { :; }
     brew_install_cask() { :; }
-    install_oh_my_zsh() { :; }
-    install_zsh_plugin() { :; }
-    install_fzf_extras() { :; }
 
     compat_reset_install_state
     compat_install_package a
   '
   [ "$status" -eq 1 ]
   [[ "$output" == *'Circular dependency detected: a -> b -> c -> a'* ]]
+}
+
+@test "shell component install dispatches through install_<component> convention" {
+  run bash -lc '
+    source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
+    source "'"$REPO_ROOT"'/lib/installers/brew.sh"
+    source "'"$REPO_ROOT"'/lib/installers/shell.sh"
+
+    brew_install_cask() {
+      printf "brew-cask:%s\n" "$1"
+    }
+
+    shell_component_install font-hack
+  '
+  [ "$status" -eq 0 ]
+  [ "$output" = 'brew-cask:font-hack' ]
+}
+
+@test "shell component install fails clearly for unknown handlers" {
+  run bash -lc '
+    source "'"$REPO_ROOT"'/lib/common/log.sh"
+    source "'"$REPO_ROOT"'/lib/common/checks.sh"
+    source "'"$REPO_ROOT"'/lib/installers/brew.sh"
+    source "'"$REPO_ROOT"'/lib/installers/shell.sh"
+
+    shell_component_install does-not-exist
+  '
+  [ "$status" -eq 1 ]
+  [[ "$output" == *'Unknown shell component handler for does-not-exist (install_does_not_exist)'* ]]
 }

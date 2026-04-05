@@ -39,28 +39,46 @@ install_fzf_extras() {
   run_eval "yes | '$fzf_install' --all"
 }
 
+install_zsh_syntax_highlighting() {
+  install_zsh_plugin "https://github.com/zsh-users/zsh-syntax-highlighting.git" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+}
+
+install_zsh_autosuggestions_plugin() {
+  install_zsh_plugin "https://github.com/zsh-users/zsh-autosuggestions" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+}
+
+install_zsh_z() {
+  install_zsh_plugin "https://github.com/agkozak/zsh-z" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-z"
+}
+
+install_fzf_extra() {
+  install_fzf_extras
+}
+
+install_font_hack() {
+  brew_install_cask "font-hack"
+}
+
+install_font_jetbrains_mono() {
+  brew_install_cask "font-jetbrains-mono"
+}
+
+shell_component_handler_name() {
+  local component="$1"
+  local normalized="${component//-/_}"
+  normalized="${normalized//[^a-zA-Z0-9_]/_}"
+  printf 'install_%s\n' "$normalized"
+}
+
 shell_component_install() {
   local component="$1"
+  local handler=""
 
-  case "$component" in
-    oh-my-zsh)
-      install_oh_my_zsh
-      ;;
-    zsh-syntax-highlighting)
-      install_zsh_plugin "https://github.com/zsh-users/zsh-syntax-highlighting.git" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-      ;;
-    zsh-autosuggestions-plugin)
-      install_zsh_plugin "https://github.com/zsh-users/zsh-autosuggestions" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-      ;;
-    zsh-z)
-      install_zsh_plugin "https://github.com/agkozak/zsh-z" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-z"
-      ;;
-    fzf-extra)
-      install_fzf_extras
-      ;;
-    *)
-      log_error "Unknown shell component handler for $component"
-      return 1
-      ;;
-  esac
+  handler="$(shell_component_handler_name "$component")"
+  if ! declare -F "$handler" >/dev/null 2>&1; then
+    log_error "Unknown shell component handler for $component ($handler)"
+    return 1
+  fi
+
+  "$handler"
 }
